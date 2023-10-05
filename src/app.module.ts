@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 import { SSEModule } from './sse/sse.module';
+import { DIDsModule } from './dids/dids.module';
 import { S3Module } from './s3/s3.module';
 import { ProtocolModule } from './protocol/protocol.module';
 
@@ -21,6 +23,8 @@ import { ProtocolModule } from './protocol/protocol.module';
       inject: [ConfigService],
     }),
     SSEModule,
+    AuthModule,
+    DIDsModule,
     S3Module,
     ProtocolModule,
   ],
