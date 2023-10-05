@@ -7,6 +7,7 @@ import { SSEModule } from './sse/sse.module';
 import { DIDsModule } from './dids/dids.module';
 import { S3Module } from './s3/s3.module';
 import { ProtocolModule } from './protocol/protocol.module';
+import { VCModule } from './vc/vc.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProtocolModule } from './protocol/protocol.module';
       }),
       inject: [ConfigService],
     }),
+    VCModule,
     SSEModule,
     AuthModule,
     DIDsModule,
