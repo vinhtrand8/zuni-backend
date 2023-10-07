@@ -8,7 +8,6 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { sha1 } from '@noble/hashes/sha1';
-import { sha256 } from '@noble/hashes/sha256';
 import verifiableDataRegistryIdl from './idl/VerifiableDataRegistry';
 import { IResolverService } from './resolver.interface.service';
 
@@ -108,7 +107,7 @@ export class SolanaService implements IResolverService {
       authentication: authenticationRelationshipAccounts.map(
         ({ account }) => account.did + KEY_FRAGMENT + account.keyId,
       ),
-      assertionMethod: assertionRelationshipAccounts.map(
+      assertion: assertionRelationshipAccounts.map(
         ({ account }) => account.did + KEY_FRAGMENT + account.keyId,
       ),
       keyAgreement: keyAgreementRelationshipAccounts.map(
@@ -167,13 +166,13 @@ export class SolanaService implements IResolverService {
   }
 
   getVerificationRelationshipSeeds(did: string, keyId: string) {
-    const authenticationSeed = sha256(
+    const authenticationSeed = sha1(
       did + keyId + VERIFIABLE_DATA_REGISTRY_DISCRIMINATOR.authentication,
     );
-    const assertionSeed = sha256(
+    const assertionSeed = sha1(
       did + keyId + VERIFIABLE_DATA_REGISTRY_DISCRIMINATOR.assertion,
     );
-    const keyAgreementSeed = sha256(
+    const keyAgreementSeed = sha1(
       did + keyId + VERIFIABLE_DATA_REGISTRY_DISCRIMINATOR.keyAgreement,
     );
 

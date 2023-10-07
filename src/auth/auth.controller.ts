@@ -31,7 +31,7 @@ export class AuthController {
   @ApiOkResponse({
     type: TokenAuthDto,
   })
-  @Post('wallets')
+  @Post('wallet')
   async verifyWalletAuth(
     @Body() verifyWalletAuthDto: VerifyWalletAuthDto,
   ): Promise<TokenAuthDto> {
@@ -51,7 +51,7 @@ export class AuthController {
   @ApiOkResponse({
     type: TokenAuthDto,
   })
-  @Post('dids')
+  @Post('did')
   async verifyDIDAuth(
     @Body() verifyDIDAuthDto: VerifyDIDAuthDto,
   ): Promise<TokenAuthDto> {
