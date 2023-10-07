@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { CredentialDto, DataSignatureDto } from './issue-vc-info.dto';
 import { SchemaDto } from './create-schema.dto';
-import { ActionType } from '@/did/dto/update-trusted-did.dto';
 import { SubmissionStatus } from '../schemas/vc.schema';
+import { ActionType } from 'src/dids/dto/update-trusted-did.dto';
 
 export class VCPresentationDto {
   @ApiProperty()

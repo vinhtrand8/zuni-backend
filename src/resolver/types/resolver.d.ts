@@ -10,6 +10,6 @@ type DIDDocumentView = {
   controller: string;
   verificationMethod: VerificationMethod[];
   authentication: string[];
-  assertionMethod: string[];
+  assertion: string[];
   keyAgreement: string[];
 };

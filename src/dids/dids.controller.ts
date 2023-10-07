@@ -55,7 +55,7 @@ export class DIDsController {
     @Body() createDidDto: CreateDIDInfoDto,
   ) {
     try {
-      const { wallet, did } = account;
+      const { did } = account;
       const existedDID = await this.didsService.getDID(did);
       if (existedDID) {
         throw new Error('DID Profile already existed');
@@ -64,12 +64,7 @@ export class DIDsController {
       const imageType = logo.mimetype.split('/').pop();
       const logoName = `${did}.${imageType}`;
       const logoUrl = await this.s3Service.upload(logoName, logo.buffer);
-      return await this.didsService.storeDID(
-        wallet,
-        did,
-        createDidDto,
-        logoUrl,
-      );
+      return await this.didsService.storeDID(did, createDidDto, logoUrl);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

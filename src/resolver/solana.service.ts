@@ -9,7 +9,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { sha1 } from '@noble/hashes/sha1';
 import { sha256 } from '@noble/hashes/sha256';
-import { SolanaConfig } from 'src/config/configuration';
 import verifiableDataRegistryIdl from './idl/VerifiableDataRegistry';
 import { IResolverService } from './resolver.interface.service';
 

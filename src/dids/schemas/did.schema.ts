@@ -10,9 +10,9 @@ export class DID {
   @Prop({ unique: true })
   did: string;
 
-  @ApiResponseProperty()
-  @Prop()
-  wallet: string;
+  // @ApiResponseProperty()
+  // @Prop()
+  // wallet: string;
 
   @ApiResponseProperty()
   @Prop()

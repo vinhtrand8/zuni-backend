@@ -10,13 +10,11 @@ export class DIDsService {
   constructor(@InjectModel(DID.name) private readonly didModel: Model<DID>) {}
 
   async storeDID(
-    wallet: string,
     did: string,
     createDidProfileDto: CreateDIDInfoDto,
     logo: string,
   ): Promise<DID> {
     const newDID = new this.didModel({
-      wallet,
       did,
       logo,
       ...createDidProfileDto,

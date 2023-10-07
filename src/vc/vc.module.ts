@@ -15,7 +15,7 @@ import {
   VCPresentationSchema,
   VCPresentation,
 } from './schemas/vc.schema';
-import { ProtocolModule } from 'src/resolver/protocol.module';
+import { ResolverModule } from 'src/resolver/resolver.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { ProtocolModule } from 'src/resolver/protocol.module';
       },
       { name: Schema.name, schema: SchemaSchema },
     ]),
-    ProtocolModule,
+    ResolverModule,
   ],
   controllers: [VCController],
   providers: [VCService],

@@ -19,6 +19,7 @@ import { SchemaDto } from './dto/create-schema.dto';
 import { VCPresentationDto } from './dto/create-vc-presentation.dto';
 import { VCPresentationInterface } from './lib/presentation';
 import { IResolverService } from 'src/resolver/resolver.interface.service';
+import { decodeMultibase } from 'src/utils/multibase';
 
 @Injectable()
 export class VCService {
@@ -39,19 +40,22 @@ export class VCService {
   ): Promise<Credential> {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);
-    const { verificationMethod } = didDocument;
-    const assertion = verificationMethod.find((method) =>
-      method.id.endsWith('#client'),
+    const { assertion, verificationMethod } = didDocument;
+    const assertionKey = verificationMethod.find(
+      (method) => method.id === assertion[0],
     );
-    if (!assertion) {
+
+    if (!assertionKey) {
       throw new Error('Invalid DID key');
     }
-    const publicKey = assertion.publicKey;
+    const publicKey = decodeMultibase(assertionKey.publicKeyMultibase).toString(
+      'hex',
+    );
 
-    const uncompressedPrefix = ''; // 04
-    const formattedPublicKey = uncompressedPrefix + publicKey;
+    // const uncompressedPrefix = ''; // 04
+    // const formattedPublicKey = uncompressedPrefix + publicKey;
 
-    if (credentialData.proof.verificationMethod !== formattedPublicKey) {
+    if (credentialData.proof.verificationMethod !== publicKey) {
       throw new Error('Invalid DID key');
     }
 
@@ -99,16 +103,26 @@ export class VCService {
   async storeNewSchema(did: string, schemaData: SchemaDto): Promise<Schema> {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);
-    const { verificationMethod } = didDocument;
-    const assertion = verificationMethod.find((method) =>
-      method.id.endsWith('#client'),
+    // const { verificationMethod } = didDocument;
+    // const assertion = verificationMethod.find((method) =>
+    //   method.id.endsWith('#client'),
+    // );
+    // if (!assertion) {
+    //   throw new Error('Invalid DID key');
+    // }
+    // const publicKey = assertion.publicKeyMultibase;
+
+    const { assertion, verificationMethod } = didDocument;
+    const assertionKey = verificationMethod.find(
+      (method) => method.id === assertion[0],
     );
-    if (!assertion) {
+
+    if (!assertionKey) {
       throw new Error('Invalid DID key');
     }
-    const publicKey = assertion.publicKey;
-
-    console.log(publicKey, ' ', schemaData);
+    const publicKey = decodeMultibase(assertionKey.publicKeyMultibase).toString(
+      'hex',
+    );
 
     if (schemaData.proof.verificationMethod !== publicKey) {
       throw new Error('Invalid DID key');
@@ -217,10 +231,10 @@ export class VCService {
       },
     });
 
-    const foundSumissions = {};
+    const foundSubmissions = {};
 
     for (let i = 0; i < submissions.length; ++i) {
-      foundSumissions[submissions[i].id] = true;
+      foundSubmissions[submissions[i].id] = true;
       if (submissions[i].schema.verifier !== did) {
         throw new Error(
           `${did} is not verifier of submission ${submissions[i].id}`,
@@ -229,7 +243,7 @@ export class VCService {
     }
     // validate correct submission Ids
     for (let i = 0; i < submissionIds.length; ++i) {
-      if (!foundSumissions.hasOwnProperty(submissionIds[i])) {
+      if (!foundSubmissions.hasOwnProperty(submissionIds[i])) {
         throw new Error(
           `Submission #${submissionIds[i]} not exists or not accessible`,
         );

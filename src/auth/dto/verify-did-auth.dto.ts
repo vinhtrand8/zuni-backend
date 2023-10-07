@@ -20,9 +20,9 @@ export class VerifyDIDAuthDto {
 
   @ApiProperty()
   @IsString()
-  encryptedPrivKey: string;
-
-  @ApiProperty()
-  @IsString()
   signature: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // encryptedPrivKey: string;
 }
