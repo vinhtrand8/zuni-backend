@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { SSEModule } from './sse/sse.module';
-import { DIDsModule } from './dids/dids.module';
-import { S3Module } from './s3/s3.module';
-import { ProtocolModule } from './protocol/protocol.module';
-import { VCModule } from './vc/vc.module';
+import { AuthModule } from 'src/auth/auth.module';
+import configuration from 'src/config/configuration';
+import { DIDsModule } from 'src/dids/dids.module';
+import { ResolverModule } from 'src/resolver/resolver.module';
+import { S3Module } from 'src/s3/s3.module';
+import { SSEModule } from 'src/sse/sse.module';
+import { VCModule } from 'src/vc/vc.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { VCModule } from './vc/vc.module';
     AuthModule,
     DIDsModule,
     S3Module,
-    ProtocolModule,
+    ResolverModule,
   ],
 })
 export class AppModule {}

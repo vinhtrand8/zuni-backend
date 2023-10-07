@@ -15,7 +15,7 @@ import {
   VCPresentationSchema,
   VCPresentation,
 } from './schemas/vc.schema';
-import { ProtocolModule } from 'src/protocol/protocol.module';
+import { ProtocolModule } from 'src/resolver/protocol.module';
 
 @Module({
   imports: [

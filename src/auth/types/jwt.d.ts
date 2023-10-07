@@ -4,9 +4,9 @@ type WalletJwtPayload = {
 };
 
 type DidJwtPayload = {
-  wallet: string;
+  // wallet: string;
   did: string;
-  didPublicKey: string;
-  didClientPublicKey: string;
+  // didPublicKey: string;
+  // didClientPublicKey: string;
   encryptedPrivKey: string;
 };

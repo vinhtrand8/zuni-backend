@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { ec as EC } from 'elliptic';
@@ -9,7 +9,8 @@ import { VerifyDIDAuthDto } from './dto/verify-did-auth.dto';
 import { VerifyWalletAuthDto } from './dto/verify-wallet-auth.dto';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import { SolanaService } from 'src/protocol/solana.service';
+import { IResolverService } from 'src/resolver/resolver.interface.service';
+import { decodeMultibase } from 'src/utils/multibase';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,8 @@ export class AuthService {
 
   constructor(
     @InjectModel(Auth.name) private readonly authModel: Model<Auth>,
-    private readonly protocolService: SolanaService,
+    @Inject(IResolverService)
+    private readonly resolverService: IResolverService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
@@ -50,7 +52,7 @@ export class AuthService {
   async verifyWalletAuth(
     verifyWalletAuthDto: VerifyWalletAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, wallet} = verifyWalletAuthDto;
+    const { uuid, wallet } = verifyWalletAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
@@ -67,7 +69,8 @@ export class AuthService {
   async verifyDIDAuth(
     verifyDIDAuthDto: VerifyDIDAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, wallet, did, signature, encryptedPrivKey } = verifyDIDAuthDto;
+    const { uuid, did, authenticationId, signature, encryptedPrivKey } =
+      verifyDIDAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
@@ -76,29 +79,33 @@ export class AuthService {
 
     // check public key in did document
     const didDocument: DIDDocumentView =
-      await this.protocolService.getDIDDocument(did);
-    const { verificationMethod } = didDocument;
-    const rootVerificationMethod = verificationMethod.find((method) =>
-      method.id.endsWith('#root'),
-    );
-    const clientVerificationMethod = verificationMethod.find((method) =>
-      method.id.endsWith('#client'),
-    );
-    if (!rootVerificationMethod || !clientVerificationMethod) {
-      throw new Error('Invalid DID');
-    }
+      await this.resolverService.fetchDIDDocument(did);
 
-    const { publicKey } = rootVerificationMethod;
-    const key = this.ec.keyFromPublic(publicKey, 'hex');
+    // const { verificationMethod } = didDocument;
+    // const rootVerificationMethod = verificationMethod.find((method) =>
+    //   method.id.endsWith('#root'),
+    // );
+    // const clientVerificationMethod = verificationMethod.find((method) =>
+    //   method.id.endsWith('#client'),
+    // );
+    // if (!rootVerificationMethod || !clientVerificationMethod) {
+    //   throw new Error('Invalid DID');
+    // }
+
+    const { publicKeyMultibase } = didDocument.verificationMethod.find(
+      (verification) => (verification.id = authenticationId),
+    );
+    const publicKey = decodeMultibase(publicKeyMultibase);
+    if (!publicKey) {
+      throw new Error('Can not find verification method');
+    }
+    const key = this.ec.keyFromPublic(publicKey);
     const verified = key.verify(challenge, signature);
     if (!verified) {
       throw new Error('Invalid Signature');
     }
     const payload: DidJwtPayload = {
-      wallet,
       did,
-      didPublicKey: publicKey,
-      didClientPublicKey: clientVerificationMethod.publicKey,
       encryptedPrivKey,
     };
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -107,7 +114,6 @@ export class AuthService {
 
     const tokenAuth: TokenAuthDto = {
       accessToken,
-      wallet,
       did,
     };
 

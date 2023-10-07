@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -8,7 +8,6 @@ import {
   VCPresentation,
 } from './schemas/vc.schema';
 import { CredentialDto } from './dto/issue-vc-info.dto';
-import { SolanaService } from 'src/protocol/solana.service';
 import {
   verifyVCPresentationSignatures,
   verifyValidSchema,
@@ -19,6 +18,7 @@ import { SchemaInterface, VCSynthesisError } from './lib/schema';
 import { SchemaDto } from './dto/create-schema.dto';
 import { VCPresentationDto } from './dto/create-vc-presentation.dto';
 import { VCPresentationInterface } from './lib/presentation';
+import { IResolverService } from 'src/resolver/resolver.interface.service';
 
 @Injectable()
 export class VCService {
@@ -29,7 +29,8 @@ export class VCService {
     private readonly schemaModel: Model<Schema>,
     @InjectModel(VCPresentation.name)
     private readonly vcPresentationModel: Model<VCPresentation>,
-    private readonly protocolService: SolanaService,
+    @Inject(IResolverService)
+    private readonly resolverService: IResolverService,
   ) {}
 
   async storeNewIssuedVC(
@@ -37,15 +38,15 @@ export class VCService {
     credentialData: CredentialDto,
   ): Promise<Credential> {
     const didDocument: DIDDocumentView =
-      await this.protocolService.getDIDDocument(did);
+      await this.resolverService.fetchDIDDocument(did);
     const { verificationMethod } = didDocument;
-    const assertionMethod = verificationMethod.find((method) =>
+    const assertion = verificationMethod.find((method) =>
       method.id.endsWith('#client'),
     );
-    if (!assertionMethod) {
+    if (!assertion) {
       throw new Error('Invalid DID key');
     }
-    const publicKey = assertionMethod.publicKey;
+    const publicKey = assertion.publicKey;
 
     const uncompressedPrefix = ''; // 04
     const formattedPublicKey = uncompressedPrefix + publicKey;
@@ -85,7 +86,7 @@ export class VCService {
     wallet: string,
   ): Promise<Array<Credential>> {
     try {
-      const dids = await this.protocolService.getDIDsByWallet(wallet);
+      const dids = await this.resolverService.fetchDIDsByWallet(wallet);
       const issuedVCs = await this.credentialModel.find({
         holder: { $in: dids },
       });
@@ -97,15 +98,15 @@ export class VCService {
 
   async storeNewSchema(did: string, schemaData: SchemaDto): Promise<Schema> {
     const didDocument: DIDDocumentView =
-      await this.protocolService.getDIDDocument(did);
+      await this.resolverService.fetchDIDDocument(did);
     const { verificationMethod } = didDocument;
-    const assertionMethod = verificationMethod.find((method) =>
+    const assertion = verificationMethod.find((method) =>
       method.id.endsWith('#client'),
     );
-    if (!assertionMethod) {
+    if (!assertion) {
       throw new Error('Invalid DID key');
     }
-    const publicKey = assertionMethod.publicKey;
+    const publicKey = assertion.publicKey;
 
     console.log(publicKey, ' ', schemaData);
 

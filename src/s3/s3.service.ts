@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Config } from 'src/config/configuration';
 
@@ -9,8 +9,8 @@ export class S3Service {
   private readonly objectBaseUrl: string;
 
   constructor(private readonly configService: ConfigService) {
-    const { region, bucketName, accessKeyId, secretAccessKey }: S3Config =
-      configService.getOrThrow('s3');
+    const { region, bucketName, accessKeyId, secretAccessKey } =
+      configService.getOrThrow<S3Config>('s3');
 
     this.objectBaseUrl = `https://${bucketName}.s3.amazonaws.com`;
 

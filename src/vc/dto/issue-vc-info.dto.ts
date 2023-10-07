@@ -10,7 +10,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ProofPurpose } from '../lib/credential';
-import { ActionType } from 'src/dids/dto/update-trusted-did.dto';
+import { ActionType } from '@/did/dto/update-trusted-did.dto';
 
 export class DataSignatureDto {
   @ApiProperty()

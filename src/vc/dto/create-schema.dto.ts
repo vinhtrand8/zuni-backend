@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { DataSignatureDto } from './issue-vc-info.dto';
-import { ActionType } from 'src/dids/dto/update-trusted-did.dto';
+import { ActionType } from '@/did/dto/update-trusted-did.dto';
 
 export class SchemaDto {
   @ApiProperty()

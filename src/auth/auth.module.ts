@@ -5,13 +5,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { Auth, AuthSchema } from './schemas/auth.schema';
 import { SSEModule } from 'src/sse/sse.module';
-import { ProtocolModule } from 'src/protocol/protocol.module';
+import { ResolverModule } from 'src/resolver/resolver.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
     SSEModule,
-    ProtocolModule,
+    ResolverModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtService],

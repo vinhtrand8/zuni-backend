@@ -6,13 +6,17 @@ export class VerifyDIDAuthDto {
   @IsString()
   uuid: string;
 
-  @ApiProperty()
-  @IsString()
-  wallet: string;
+  // @ApiProperty()
+  // @IsString()
+  // wallet: string;
 
   @ApiProperty()
   @IsString()
   did: string;
+
+  @ApiProperty()
+  @IsString()
+  authenticationId: string;
 
   @ApiProperty()
   @IsString()

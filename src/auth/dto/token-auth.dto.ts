@@ -5,7 +5,7 @@ export class TokenAuthDto {
   accessToken: string;
 
   @ApiResponseProperty()
-  wallet: string;
+  wallet?: string;
 
   @ApiResponseProperty()
   did?: string;
