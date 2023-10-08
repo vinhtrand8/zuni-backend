@@ -18,7 +18,7 @@ import { SchemaInterface, VCSynthesisError } from './lib/schema';
 import { SchemaDto } from './dto/create-schema.dto';
 import { VCPresentationDto } from './dto/create-vc-presentation.dto';
 import { VCPresentationInterface } from './lib/presentation';
-import { IResolverService } from 'src/resolver/resolver.interface.service';
+import { IResolverService } from 'src/resolver/interface.resolver.service';
 import { decodeMultibase } from 'src/utils/multibase';
 
 @Injectable()

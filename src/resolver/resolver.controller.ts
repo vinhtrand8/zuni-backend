@@ -5,7 +5,7 @@ import {
   Inject,
   Param,
 } from '@nestjs/common';
-import { IResolverService } from './resolver.interface.service';
+import { IResolverService } from './interface.resolver.service';
 
 @Controller('resolver')
 export class ResolverController {

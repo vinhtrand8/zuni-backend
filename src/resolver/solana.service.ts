@@ -9,7 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { sha1 } from '@noble/hashes/sha1';
 import verifiableDataRegistryIdl from './idl/VerifiableDataRegistry';
-import { IResolverService } from './resolver.interface.service';
+import { IResolverService } from './interface.resolver.service';
 
 const VERIFIABLE_DATA_REGISTRY_DISCRIMINATOR = {
   authentication: 'authentication',
@@ -22,8 +22,6 @@ const ZUNI_SOLANA_DID_PREFIX = {
 };
 
 const STRING_LEN_BYTES = 4;
-
-const KEY_FRAGMENT = '#';
 
 @Injectable()
 export class SolanaService implements IResolverService {
@@ -53,6 +51,9 @@ export class SolanaService implements IResolverService {
       await this.verifiableDataRegistryProgram.account.didDocument.fetch(
         didPda,
       );
+
+    const didBase58 = utils.bytes.bs58.encode(Buffer.from(did));
+
     const verificationMethodAccounts =
       await this.verifiableDataRegistryProgram.account.verificationMethod.all([
         {
@@ -61,7 +62,7 @@ export class SolanaService implements IResolverService {
               ACCOUNT_DISCRIMINATOR_SIZE +
               web3.PUBLIC_KEY_LENGTH +
               STRING_LEN_BYTES,
-            bytes: utils.bytes.bs58.encode(Buffer.from(did)),
+            bytes: didBase58,
           },
         },
       ]);
@@ -70,7 +71,7 @@ export class SolanaService implements IResolverService {
         {
           memcmp: {
             offset: ACCOUNT_DISCRIMINATOR_SIZE + STRING_LEN_BYTES,
-            bytes: utils.bytes.bs58.encode(Buffer.from(did)),
+            bytes: didBase58,
           },
         },
       ]);
@@ -79,7 +80,7 @@ export class SolanaService implements IResolverService {
         {
           memcmp: {
             offset: ACCOUNT_DISCRIMINATOR_SIZE + STRING_LEN_BYTES,
-            bytes: utils.bytes.bs58.encode(Buffer.from(did)),
+            bytes: didBase58,
           },
         },
       ]);
@@ -88,7 +89,7 @@ export class SolanaService implements IResolverService {
         {
           memcmp: {
             offset: ACCOUNT_DISCRIMINATOR_SIZE + STRING_LEN_BYTES,
-            bytes: utils.bytes.bs58.encode(Buffer.from(did)),
+            bytes: didBase58,
           },
         },
       ]);
@@ -98,20 +99,20 @@ export class SolanaService implements IResolverService {
       controller: didOverview.controller.toBase58(),
       verificationMethod: verificationMethodAccounts.map(({ account }) => {
         return {
-          id: account.did + KEY_FRAGMENT + account.keyId,
+          id: this.getIdOfVerificationMethod(account.did, account.keyId),
           type: account.rType,
           controller: account.controller.toBase58(),
           publicKeyMultibase: account.publicKeyMultibase,
         };
       }),
-      authentication: authenticationRelationshipAccounts.map(
-        ({ account }) => account.did + KEY_FRAGMENT + account.keyId,
+      authentication: authenticationRelationshipAccounts.map(({ account }) =>
+        this.getIdOfVerificationMethod(account.did, account.keyId),
       ),
-      assertion: assertionRelationshipAccounts.map(
-        ({ account }) => account.did + KEY_FRAGMENT + account.keyId,
+      assertion: assertionRelationshipAccounts.map(({ account }) =>
+        this.getIdOfVerificationMethod(account.did, account.keyId),
       ),
-      keyAgreement: keyAgreementRelationshipAccounts.map(
-        ({ account }) => account.did + KEY_FRAGMENT + account.keyId,
+      keyAgreement: keyAgreementRelationshipAccounts.map(({ account }) =>
+        this.getIdOfVerificationMethod(account.did, account.keyId),
       ),
     };
 
@@ -133,9 +134,11 @@ export class SolanaService implements IResolverService {
   }
 
   getDidSeed(did: string): number[] {
-    const hashed = utils.sha256.hash(did);
-    const didSeed = [...Buffer.from(hashed).subarray(0, 20)];
-    return didSeed;
+    // const hashed = utils.sha256.hash(did);
+    // const didSeed = [...Buffer.from(hashed).subarray(0, 20)];
+    // return didSeed;
+    const didSeed = sha1(did);
+    return [...didSeed];
   }
 
   findDidPDA(programId: web3.PublicKey, did: string) {
@@ -147,10 +150,12 @@ export class SolanaService implements IResolverService {
   }
 
   getVerificationMethodSeed(did: string, keyId: string): number[] {
-    const data = did + keyId;
-    const hashed = utils.sha256.hash(data);
-    const verificationSeed = [...Buffer.from(hashed).subarray(0, 20)];
-    return verificationSeed;
+    // const data = did + keyId;
+    // const hashed = utils.sha256.hash(data);
+    // const verificationSeed = [...Buffer.from(hashed).subarray(0, 20)];
+    // return verificationSeed;
+    const verificationSeed = sha1(did + keyId);
+    return [...verificationSeed];
   }
 
   findVerificationMethodPda(
@@ -177,13 +182,13 @@ export class SolanaService implements IResolverService {
     );
 
     return {
-      authenticationSeed,
-      assertionSeed,
-      keyAgreementSeed,
+      authenticationSeed: [...authenticationSeed],
+      assertionSeed: [...assertionSeed],
+      keyAgreementSeed: [...keyAgreementSeed],
     };
   }
 
-  findVerificationRelationshipPda(
+  findVerificationRelationshipPdas(
     programId: web3.PublicKey,
     did: string,
     keyId: string,
@@ -232,5 +237,23 @@ export class SolanaService implements IResolverService {
     const buffer = Buffer.from(hashed);
     const did = ZUNI_SOLANA_DID_PREFIX.devnet + buffer.toString('hex');
     return did;
+  }
+
+  getIdOfVerificationMethod(did: string, fragment?: string, query?: string) {
+    const fragmentDiscriminator = '#';
+    const queryDiscriminator = '?';
+    let id: string;
+
+    if (query && fragment) {
+      id = did + queryDiscriminator + query + fragmentDiscriminator + fragment;
+    } else if (query) {
+      id = did + queryDiscriminator + query;
+    } else if (fragment) {
+      id = did + fragmentDiscriminator + fragment;
+    } else {
+      id = did;
+    }
+
+    return id;
   }
 }

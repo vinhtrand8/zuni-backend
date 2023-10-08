@@ -8,7 +8,7 @@ import { VerifyDIDAuthDto } from './dto/verify-did-auth.dto';
 import { VerifyWalletAuthDto } from './dto/verify-wallet-auth.dto';
 import { randomBytes, randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import { IResolverService } from 'src/resolver/resolver.interface.service';
+import { IResolverService } from 'src/resolver/interface.resolver.service';
 import { decodeMultibase } from 'src/utils/multibase';
 import { keyFromPublicKey } from 'src/utils/ec';
 

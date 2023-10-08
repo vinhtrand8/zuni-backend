@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ResolverController } from './resolver.controller';
-import { IResolverService } from './resolver.interface.service';
+import { IResolverService } from './interface.resolver.service';
 import { SolanaService } from './solana.service';
 
 @Module({
