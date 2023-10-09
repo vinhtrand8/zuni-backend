@@ -1,16 +1,16 @@
-import { InjectModel } from '@nestjs/mongoose';
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { randomBytes, randomUUID } from 'crypto';
 import { Model } from 'mongoose';
-import { Auth } from './schemas/auth.schema';
+import { IResolverService } from 'src/resolver/interface.resolver.service';
+import { keyFromPublicKey } from 'src/utils/ec';
+import { decodeMultibase } from 'src/utils/multibase';
 import { TokenAuthDto } from './dto/token-auth.dto';
 import { VerifyDIDAuthDto } from './dto/verify-did-auth.dto';
 import { VerifyWalletAuthDto } from './dto/verify-wallet-auth.dto';
-import { randomBytes, randomUUID } from 'crypto';
-import { ConfigService } from '@nestjs/config';
-import { IResolverService } from 'src/resolver/interface.resolver.service';
-import { decodeMultibase } from 'src/utils/multibase';
-import { keyFromPublicKey } from 'src/utils/ec';
+import { Auth } from './schemas/auth.schema';
 
 @Injectable()
 export class AuthService {

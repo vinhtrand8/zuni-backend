@@ -11,12 +11,25 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "composite": true,
+    "rootDir": ".",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/src/*": [
+        "src/*"
+      ],
+      "library/*": [
+        "src/utils/zuni-crypto-library/*"
+      ]
+    }
   }
 }

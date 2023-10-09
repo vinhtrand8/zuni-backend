@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDIDInfoDto } from './dto/create-did-info.dto';
-import { DID } from './schemas/did.schema';
-import { Model, UpdateWriteOpResult } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model, UpdateWriteOpResult } from 'mongoose';
+import { CreateDIDInfoDto } from './dto/create-did-info.dto';
 import { TrustedDIDInfo } from './dto/trusted-did-info-dto';
+import { DID } from './schemas/did.schema';
 
 @Injectable()
 export class DIDsService {

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { Auth, AuthSchema } from './schemas/auth.schema';
-import { SSEModule } from 'src/sse/sse.module';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ResolverModule } from 'src/resolver/resolver.module';
+import { SSEModule } from 'src/sse/sse.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { Auth, AuthSchema } from './schemas/auth.schema';
 
 @Module({
   imports: [
