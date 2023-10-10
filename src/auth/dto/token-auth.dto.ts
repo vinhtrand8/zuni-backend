@@ -9,4 +9,7 @@ export class TokenAuthDto {
 
   @ApiResponseProperty()
   did?: string;
+
+  @ApiResponseProperty()
+  privateKey?: string;
 }
