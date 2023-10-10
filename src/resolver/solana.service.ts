@@ -99,20 +99,20 @@ export class SolanaService implements IResolverService {
       controller: didOverview.controller.toBase58(),
       verificationMethod: verificationMethodAccounts.map(({ account }) => {
         return {
-          id: this.getIdOfVerificationMethod(account.did, account.keyId),
+          id: account.keyId,
           type: account.rType,
           controller: account.controller.toBase58(),
           publicKeyMultibase: account.publicKeyMultibase,
         };
       }),
-      authentication: authenticationRelationshipAccounts.map(({ account }) =>
-        this.getIdOfVerificationMethod(account.did, account.keyId),
+      authentication: authenticationRelationshipAccounts.map(
+        ({ account }) => account.keyId,
       ),
-      assertion: assertionRelationshipAccounts.map(({ account }) =>
-        this.getIdOfVerificationMethod(account.did, account.keyId),
+      assertion: assertionRelationshipAccounts.map(
+        ({ account }) => account.keyId,
       ),
-      keyAgreement: keyAgreementRelationshipAccounts.map(({ account }) =>
-        this.getIdOfVerificationMethod(account.did, account.keyId),
+      keyAgreement: keyAgreementRelationshipAccounts.map(
+        ({ account }) => account.keyId,
       ),
     };
 
