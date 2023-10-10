@@ -4,4 +4,5 @@ type WalletJwtPayload = {
 
 type DidJwtPayload = {
   did: string;
+  privateKey: string;
 };

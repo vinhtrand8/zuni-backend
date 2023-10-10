@@ -88,7 +88,8 @@ export class AuthService {
   async verifyDIDAuth(
     verifyDIDAuthDto: VerifyDIDAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, did, authenticationId, signature } = verifyDIDAuthDto;
+    const { uuid, did, authenticationId, signature, privateKey } =
+      verifyDIDAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
@@ -113,6 +114,7 @@ export class AuthService {
 
     const payload: DidJwtPayload = {
       did,
+      privateKey,
     };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.jwtSecret,
@@ -121,6 +123,7 @@ export class AuthService {
     const tokenAuth: TokenAuthDto = {
       accessToken,
       did,
+      privateKey,
     };
     return tokenAuth;
   }

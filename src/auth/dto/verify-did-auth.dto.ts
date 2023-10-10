@@ -6,10 +6,6 @@ export class VerifyDIDAuthDto {
   @IsString()
   uuid: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // wallet: string;
-
   @ApiProperty()
   @IsString()
   did: string;
@@ -22,7 +18,7 @@ export class VerifyDIDAuthDto {
   @IsString()
   signature: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // encryptedPrivKey: string;
+  @ApiProperty()
+  @IsString()
+  privateKey: string;
 }
