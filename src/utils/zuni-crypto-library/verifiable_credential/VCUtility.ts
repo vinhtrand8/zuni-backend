@@ -686,11 +686,15 @@ export async function verifyVCPresentation<
   ZP extends ZKProof,
 >(
   vcpresentation: VCPresentation<P, ZP>,
+  schema: Schema<P>,
   zkEngine: ZKEngine<ZP>,
   vKey: JSON,
 ): Promise<boolean> {
   /// check signatures & format
   verifyVCPresentationFormat(vcpresentation);
+  if (JSONStringify(schema) != JSONStringify(vcpresentation.schema)) {
+    throw VCSynthesisError.InvalidVCPresentation;
+  }
 
   for (let i = 0; i < vcpresentation.fieldValidationProofs.length; ++i) {
     const {
@@ -740,4 +744,21 @@ export async function verifyVCPresentation<
   }
 
   return true;
+}
+
+export async function getRequestedFieldsFromVCPresentation<
+  P extends ECCCurvePoint,
+  ZP extends ZKProof,
+>(
+  vcpresentation: VCPresentation<P, ZP>,
+  verifierPrivateKey: ECCPrivateKeyInterface<P>,
+): Promise<Array<any>> {
+  const data = ECCUtility.ecdhDecrypt(
+    verifierPrivateKey,
+    ECCUtility.newPublicKey(
+      vcpresentation.publicCredentials[0].holderPublicKey,
+    ),
+    vcpresentation.encryptedData,
+  );
+  return JSON.parse(data);
 }

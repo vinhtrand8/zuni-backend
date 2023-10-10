@@ -16,6 +16,7 @@ import {
   createVerificationSchema,
   decryptPublicCredential,
   generateVCPresentation,
+  getRequestedFieldsFromVCPresentation,
   issueVC,
   verifyValidPublicCredential,
   verifyValidSchema,
@@ -239,10 +240,19 @@ describe('Verifiable Credential protocol', function () {
 
     const res = await verifyVCPresentation(
       vcpresentation,
+      schema,
       snarkjs.groth16,
       vKey,
     );
     assert.equal(res, true);
+
+    console.log(
+      'Requested fields = ',
+      getRequestedFieldsFromVCPresentation(
+        vcpresentation,
+        verifierKeys.getPrivateKey(),
+      ),
+    );
 
     process.exit(0);
   });
