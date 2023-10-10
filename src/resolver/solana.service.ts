@@ -11,6 +11,12 @@ import { keccak_256 } from '@noble/hashes/sha3';
 import { IDL as idl } from './idl/VerifiableDataRegistry';
 import { IResolverService } from './interface.resolver.service';
 
+export const ZUNI_DID_PREFIX = {
+  solana: {
+    devnet: 'did:zuni:solana:devnet:',
+  },
+};
+
 export const VERIFICATION_RELATIONSHIP = {
   authentication: {
     discriminator: 'authentication',
@@ -56,31 +62,31 @@ export class SolanaService implements IResolverService {
       await this.verifiableDataRegistryProgram.account.didDocument.fetch(
         didPda,
       );
-    const verificationMethods = await this.fetchVerificationMethods(
-      this.verifiableDataRegistryProgram,
-      did,
-    );
+    const verificationMethods = await this.fetchVerificationMethods(did);
     const { authentications, assertions, keyAgreements } =
-      await this.fetchVerificationRelationships(
-        this.verifiableDataRegistryProgram,
-        did,
-      );
+      await this.fetchVerificationRelationships(did);
 
     const didDocument: DIDDocumentView = {
-      id: did,
+      id: this.convertToDidUrlFormat(did),
       controller: didOverview.controller.toBase58(),
       verificationMethod: verificationMethods.map((verification) => {
         const { keyId, rType, controller, publicKeyMultibase } = verification;
         return {
-          id: keyId,
+          id: this.convertToDidUrlFormat(keyId),
           type: rType,
           controller: controller.toBase58(),
           publicKeyMultibase: publicKeyMultibase,
         };
       }),
-      authentication: authentications.map(({ keyId }) => keyId),
-      assertion: assertions.map(({ keyId }) => keyId),
-      keyAgreement: keyAgreements.map(({ keyId }) => keyId),
+      authentication: authentications.map(({ keyId }) =>
+        this.convertToDidUrlFormat(keyId),
+      ),
+      assertion: assertions.map(({ keyId }) =>
+        this.convertToDidUrlFormat(keyId),
+      ),
+      keyAgreement: keyAgreements.map(({ keyId }) =>
+        this.convertToDidUrlFormat(keyId),
+      ),
     };
 
     return didDocument;
@@ -98,6 +104,87 @@ export class SolanaService implements IResolverService {
       ]);
 
     return didAccounts.map(({ account }) => account.did);
+  }
+
+  async fetchNumberOfDidsOwnedByController(
+    controllerPublicKey: web3.PublicKey,
+  ): Promise<number> {
+    const accounts =
+      await this.verifiableDataRegistryProgram.account.didDocument.all([
+        {
+          memcmp: {
+            offset: ACCOUNT_DISCRIMINATOR_SIZE,
+            bytes: controllerPublicKey.toBase58(),
+          },
+        },
+      ]);
+
+    return accounts.length;
+  }
+
+  async fetchVerificationMethods(did: string) {
+    const didBase58 = utils.bytes.bs58.encode(Buffer.from(did));
+    const verificationMethodAccounts =
+      await this.verifiableDataRegistryProgram.account.verificationMethod.all([
+        {
+          memcmp: {
+            offset:
+              ACCOUNT_DISCRIMINATOR_SIZE +
+              web3.PUBLIC_KEY_LENGTH +
+              STRING_LEN_BYTES,
+            bytes: didBase58,
+          },
+        },
+      ]);
+    return verificationMethodAccounts.map(({ account }) => account);
+  }
+
+  async fetchVerificationRelationships(did: string) {
+    const didBase58 = utils.bytes.bs58.encode(Buffer.from(did));
+    const relationshipAccounts =
+      await this.verifiableDataRegistryProgram.account.verificationRelationship.all(
+        [
+          {
+            memcmp: {
+              offset: ACCOUNT_DISCRIMINATOR_SIZE + STRING_LEN_BYTES,
+              bytes: didBase58,
+            },
+          },
+        ],
+      );
+    const authenticationAccounts = relationshipAccounts.filter(
+      ({ account }) => account.relationship.authentication !== undefined,
+    );
+    const assertions = relationshipAccounts.filter(
+      ({ account }) => account.relationship.assertion !== undefined,
+    );
+    const keyAgreementAccounts = relationshipAccounts.filter(
+      ({ account }) => account.relationship.keyAgreement !== undefined,
+    );
+
+    return {
+      authentications: authenticationAccounts.map(({ account }) => account),
+      assertions: assertions.map(({ account }) => account),
+      keyAgreements: keyAgreementAccounts.map(({ account }) => account),
+    };
+  }
+
+  getIdOfVerificationMethod(did: string, fragment?: string, query?: string) {
+    const fragmentDiscriminator = '#';
+    const queryDiscriminator = '?';
+    let id: string;
+
+    if (query && fragment) {
+      id = did + queryDiscriminator + query + fragmentDiscriminator + fragment;
+    } else if (query) {
+      id = did + queryDiscriminator + query;
+    } else if (fragment) {
+      id = did + fragmentDiscriminator + fragment;
+    } else {
+      id = did;
+    }
+
+    return id;
   }
 
   findDidPDA(programId: web3.PublicKey, did: string) {
@@ -152,106 +239,7 @@ export class SolanaService implements IResolverService {
     };
   }
 
-  async getNumberOfDidsOwnedByController(
-    controllerPublicKey: web3.PublicKey,
-  ): Promise<number> {
-    const accounts =
-      await this.verifiableDataRegistryProgram.account.didDocument.all([
-        {
-          memcmp: {
-            offset: ACCOUNT_DISCRIMINATOR_SIZE,
-            bytes: controllerPublicKey.toBase58(),
-          },
-        },
-      ]);
-
-    return accounts.length;
-  }
-
-  async fetchVerificationMethods(
-    program: Program<VerifiableDataRegistry>,
-    did: string,
-  ) {
-    const didBase58 = utils.bytes.bs58.encode(Buffer.from(did));
-    const verificationMethodAccounts =
-      await program.account.verificationMethod.all([
-        {
-          memcmp: {
-            offset:
-              ACCOUNT_DISCRIMINATOR_SIZE +
-              web3.PUBLIC_KEY_LENGTH +
-              STRING_LEN_BYTES,
-            bytes: didBase58,
-          },
-        },
-      ]);
-    return verificationMethodAccounts.map(({ account }) => account);
-  }
-
-  async fetchVerificationRelationships(
-    program: Program<VerifiableDataRegistry>,
-    did: string,
-  ) {
-    const didBase58 = utils.bytes.bs58.encode(Buffer.from(did));
-    const relationshipAccounts =
-      await program.account.verificationRelationship.all([
-        {
-          memcmp: {
-            offset: ACCOUNT_DISCRIMINATOR_SIZE + STRING_LEN_BYTES,
-            bytes: didBase58,
-          },
-        },
-      ]);
-    const authentications = relationshipAccounts.map((acc) => {
-      const data = acc.account;
-      if (
-        JSON.stringify(data.relationship) ===
-        JSON.stringify(VERIFICATION_RELATIONSHIP.authentication.input)
-      ) {
-        return data;
-      }
-    });
-    const assertions = relationshipAccounts.map((acc) => {
-      const data = acc.account;
-      if (
-        JSON.stringify(data.relationship) ===
-        JSON.stringify(VERIFICATION_RELATIONSHIP.assertion.input)
-      ) {
-        return data;
-      }
-    });
-    const keyAgreements = relationshipAccounts.map((acc) => {
-      const data = acc.account;
-      if (
-        JSON.stringify(data.relationship) ===
-        JSON.stringify(VERIFICATION_RELATIONSHIP.keyAgreement.input)
-      ) {
-        return data;
-      }
-    });
-
-    return {
-      authentications,
-      assertions,
-      keyAgreements,
-    };
-  }
-
-  getIdOfVerificationMethod(did: string, fragment?: string, query?: string) {
-    const fragmentDiscriminator = '#';
-    const queryDiscriminator = '?';
-    let id: string;
-
-    if (query && fragment) {
-      id = did + queryDiscriminator + query + fragmentDiscriminator + fragment;
-    } else if (query) {
-      id = did + queryDiscriminator + query;
-    } else if (fragment) {
-      id = did + fragmentDiscriminator + fragment;
-    } else {
-      id = did;
-    }
-
-    return id;
+  convertToDidUrlFormat(did: string) {
+    return ZUNI_DID_PREFIX.solana.devnet + did;
   }
 }

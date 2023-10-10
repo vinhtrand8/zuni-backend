@@ -12,7 +12,8 @@ export const keyFromPublicKey = (
   switch (keyType) {
     case VERIFICATION_METHOD_TYPE.secp256k1: {
       const ec = new EC('secp256k1');
-      return ec.keyFromPublic(publicKey);
+      const uncompressedKey = [4, ...publicKey];
+      return ec.keyFromPublic(uncompressedKey);
     }
     case VERIFICATION_METHOD_TYPE.ed25519: {
       const ec = new EC('ed25519');
