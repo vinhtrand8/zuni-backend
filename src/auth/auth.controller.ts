@@ -1,11 +1,11 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Auth } from './schemas/auth.schema';
+import { SSEService } from 'src/sse/sse.service';
 import { AuthService } from './auth.service';
 import { TokenAuthDto } from './dto/token-auth.dto';
 import { VerifyDIDAuthDto } from './dto/verify-did-auth.dto';
 import { VerifyWalletAuthDto } from './dto/verify-wallet-auth.dto';
-import { SSEService } from 'src/sse/sse.service';
+import { Auth } from './schemas/auth.schema';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -40,7 +40,7 @@ export class AuthController {
       const tokenAuth = await this.authService.verifyWalletAuth(
         verifyWalletAuthDto,
       );
-      await this.authService.removeRequestAuthByUuid(uuid);
+      this.authService.removeRequestAuthByUuid(uuid);
 
       return tokenAuth;
     } catch (error) {

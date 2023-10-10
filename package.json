@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "prettier-format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:lib": "mocha src/utils/zuni-crypto-library --recursive --require ts-node/register"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.363.0",
@@ -31,7 +32,10 @@
     "@nestjs/mongoose": "^10.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.0.4",
+    "@types/mocha": "^10.0.2",
+    "@types/snarkjs": "^0.7.5",
     "aes-js": "^3.1.2",
+    "chai": "^4.3.10",
     "circomlibjs": "^0.1.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -40,10 +44,20 @@
     "ffjavascript": "^0.2.59",
     "json-stable-stringify": "^1.0.2",
     "json-stable-stringify-without-jsonify": "^1.0.1",
+    "mocha": "^10.2.0",
     "mongoose": "^7.3.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "snarkjs": "^0.7.0"
+    "snarkjs": "^0.7.0",
+    "@types/circomlibjs": "^0.1.2",
+    "@types/json-stable-stringify": "^1.0.34",
+    "@types/lodash": "^4.14.195",
+    "@types/seedrandom": "^3.0.6",
+    "circom_tester": "^0.0.19",
+    "circomlib": "^2.0.5",
+    "eslint-plugin-import": "^2.26.0",
+    "lodash": "^4.17.21",
+    "seedrandom": "^3.0.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -71,7 +85,16 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "@types/bn.js": "^5.1.0",
+    "@types/chai": "^4.3.5",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^10.0.2",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.15",
+    "prettier-plugin-organize-imports": "^3.2.3",
+    "rimraf": "^3.0.2",
+    "ts-mocha": "^10.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

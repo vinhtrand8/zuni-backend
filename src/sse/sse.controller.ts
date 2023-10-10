@@ -7,11 +7,11 @@ import {
   Res,
   Sse,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { SSEService } from './sse.service';
-import { Response } from 'express';
-import { EmitEventDto } from './dto/emit-event.dto';
 import { ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
+import { Observable } from 'rxjs';
+import { EmitEventDto } from './dto/emit-event.dto';
+import { SSEService } from './sse.service';
 
 @Controller('sse')
 export class SSEController {

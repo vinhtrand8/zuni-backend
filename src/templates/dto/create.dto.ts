@@ -3,9 +3,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
-  IsBoolean,
   IsNotEmpty,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -15,16 +13,8 @@ export class TemplateAttributeDto {
   @IsNotEmpty()
   name: string;
 
-  /*TODO: refactor this type, change type: "string" | "boolean" | "number" | "object" */
   @Type(() => TemplateAttributeDto)
-  type: string;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsBoolean()
-  required: boolean;
+  value: string | number | TemplateAttributeDto;
 }
 
 export class CreateTemplateDto {

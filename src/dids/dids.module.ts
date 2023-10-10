@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DIDsService } from './dids.service';
-import { DIDsController } from './dids.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DID, DIDSchema } from './schemas/did.schema';
 import { AuthModule } from 'src/auth/auth.module';
 import { S3Module } from 'src/s3/s3.module';
+import { DIDsController } from './dids.controller';
+import { DIDsService } from './dids.service';
+import { DID, DIDSchema } from './schemas/did.schema';
 
 @Module({
   imports: [
