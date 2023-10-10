@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 interface ITemplateAttribute {
   name: string;
-  value: string | number | boolean | ITemplateAttribute;
+  type: string | ITemplateAttribute;
   description?: string;
   required: boolean;
 }

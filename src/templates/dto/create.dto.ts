@@ -15,8 +15,9 @@ export class TemplateAttributeDto {
   @IsNotEmpty()
   name: string;
 
+  /*TODO: refactor this type, change type: "string" | "boolean" | "number" | "object" */
   @Type(() => TemplateAttributeDto)
-  value: string | number | TemplateAttributeDto;
+  type: string;
 
   @IsString()
   @IsOptional()
