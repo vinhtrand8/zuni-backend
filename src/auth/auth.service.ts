@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes, randomUUID } from 'crypto';
-import { ec as EC, eddsa as EdDSA } from 'elliptic';
+import { eddsa as EdDSA } from 'elliptic';
 import { Model } from 'mongoose';
 import { IResolverService } from 'src/resolver/interface.resolver.service';
 import { keyFromPublicKey } from 'src/utils/ec';

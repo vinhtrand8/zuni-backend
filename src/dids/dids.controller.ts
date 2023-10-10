@@ -1,30 +1,30 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Patch,
   BadRequestException,
-  UploadedFile,
-  UseInterceptors,
-  ParseFilePipe,
-  MaxFileSizeValidator,
+  Body,
+  Controller,
   FileTypeValidator,
-  Param,
+  Get,
+  MaxFileSizeValidator,
   NotFoundException,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateWriteOpResult } from 'mongoose';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Account } from 'src/auth/decorators/account.decorators';
+import { S3Service } from 'src/s3/s3.service';
 import { DIDsService } from './dids.service';
 import { CreateDIDInfoDto } from './dto/create-did-info.dto';
-import { Account } from 'src/auth/decorators/account.decorators';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { DID } from './schemas/did.schema';
-import { ActionType, UpdateTrustedDIDDto } from './dto/update-trusted-did.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { S3Service } from 'src/s3/s3.service';
 import { TrustedDIDInfo } from './dto/trusted-did-info-dto';
-import { UpdateWriteOpResult } from 'mongoose';
+import { ActionType, UpdateTrustedDIDDto } from './dto/update-trusted-did.dto';
+import { DID } from './schemas/did.schema';
 
 @ApiTags('dids')
 @ApiBearerAuth()
