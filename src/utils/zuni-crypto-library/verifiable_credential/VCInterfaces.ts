@@ -186,10 +186,10 @@ export class PublicCredential<
     this.holder = data.holder;
     this.issuanceDate = data.issuanceDate;
     this.expirationDate = data.expirationDate;
-    this.fieldIndexes = data.fieldIndexes;
+    this.fieldIndexes = data.fieldIndexes.map((x) => new FieldIndex(x));
     this.fieldMerkleRoot = data.fieldMerkleRoot;
     this.encryptedData = data.encryptedData;
-    this.signatureProof = data.signatureProof;
+    this.signatureProof = new DataSignature(data.signatureProof);
   }
 
   clone(): PublicCredential<P> {
@@ -227,7 +227,7 @@ export class PrivateCredential<
 
   clone(): PrivateCredential<P> {
     return new PrivateCredential<P>({
-      ...(super.clone() as InterfaceWithoutMethodsOf<PublicCredential<P>>),
+      ...super.clone(),
       credentialSubject: Object.assign({}, this.credentialSubject),
     });
   }
@@ -251,7 +251,7 @@ export class SchemaCredentialCheck<
   }) {
     super(data);
     this.fieldValidationObject = data.fieldValidationObject;
-    this.fieldIndexes = data.fieldIndexes;
+    this.fieldIndexes = data.fieldIndexes.map((x) => new FieldIndex(x));
     this.fieldMerkleRoot = data.fieldMerkleRoot;
   }
 
@@ -306,9 +306,11 @@ export class Schema<P extends ECCCurvePoint> extends BaseClassValidator<
     this.id = data.id;
     this.name = data.name;
     this.verifier = data.verifier;
-    this.credentialChecks = data.credentialChecks;
+    this.credentialChecks = data.credentialChecks.map(
+      (x) => new SchemaCredentialCheck(x),
+    );
     this.requestedFields = data.requestedFields;
-    this.signatureProof = data.signatureProof;
+    this.signatureProof = new DataSignature(data.signatureProof);
     this.issuanceDate = data.issuanceDate;
     this.verifierPublicKey = data.verifierPublicKey;
   }
@@ -606,11 +608,15 @@ export class VCPresentation<
     super(data);
     this.id = data.id;
     this.holder = data.holder;
-    this.publicCredentials = data.publicCredentials;
-    this.schema = data.schema;
+    this.publicCredentials = data.publicCredentials.map(
+      (x) => new PublicCredential(x),
+    );
+    this.schema = new Schema(data.schema);
     this.encryptedData = data.encryptedData;
-    this.signatureProof = data.signatureProof;
-    this.fieldValidationProofs = data.fieldValidationProofs;
+    this.signatureProof = new DataSignature(data.signatureProof);
+    this.fieldValidationProofs = data.fieldValidationProofs.map((x) =>
+      x.map((y) => new SingleCredentialFieldValidationSnarkProof(y)),
+    );
   }
 
   clone(): VCPresentation<P, ZP> {
