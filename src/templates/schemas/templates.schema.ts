@@ -5,6 +5,8 @@ import { HydratedDocument } from 'mongoose';
 interface ITemplateAttribute {
   name: string;
   value: string | number | boolean | ITemplateAttribute;
+  description?: string;
+  required: boolean;
 }
 
 export type TemplateDocument = HydratedDocument<Template>;
