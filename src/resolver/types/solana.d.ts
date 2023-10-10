@@ -9,17 +9,6 @@ type VerifiableDataRegistry = {
           name: 'didDocument';
           isMut: true;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'seed';
-              },
-            ];
-          };
         },
         {
           name: 'controller';
@@ -33,12 +22,6 @@ type VerifiableDataRegistry = {
         },
       ];
       args: [
-        {
-          name: 'seed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
         {
           name: 'did';
           type: 'string';
@@ -52,33 +35,11 @@ type VerifiableDataRegistry = {
           name: 'verificationMethod';
           isMut: true;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'verification_seed';
-              },
-            ];
-          };
         },
         {
           name: 'didDocument';
           isMut: false;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'did_seed';
-              },
-            ];
-          };
         },
         {
           name: 'controller';
@@ -93,16 +54,8 @@ type VerifiableDataRegistry = {
       ];
       args: [
         {
-          name: 'didSeed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
-        {
-          name: 'verificationSeed';
-          type: {
-            array: ['u8', 20];
-          };
+          name: 'did';
+          type: 'string';
         },
         {
           name: 'keyId';
@@ -123,58 +76,76 @@ type VerifiableDataRegistry = {
       ];
     },
     {
-      name: 'addAuthentication';
+      name: 'addVerificationRelationship';
       accounts: [
+        {
+          name: 'verificationRelationship';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'didDocument';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'verificationMethod';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'controller';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'did';
+          type: 'string';
+        },
+        {
+          name: 'relationship';
+          type: {
+            defined: 'Relationship';
+          };
+        },
+        {
+          name: 'keyId';
+          type: 'string';
+        },
+      ];
+    },
+    {
+      name: 'addCredential';
+      accounts: [
+        {
+          name: 'credentialState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'didDocument';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'verificationMethod';
+          isMut: false;
+          isSigner: false;
+        },
         {
           name: 'authentication';
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'authentication_seed';
-              },
-            ];
-          };
-        },
-        {
-          name: 'didDocument';
           isMut: false;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'did_seed';
-              },
-            ];
-          };
         },
         {
-          name: 'verificationMethod';
-          isMut: false;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'verification_seed';
-              },
-            ];
-          };
-        },
-        {
-          name: 'controller';
+          name: 'payer';
           isMut: true;
           isSigner: true;
         },
@@ -186,78 +157,60 @@ type VerifiableDataRegistry = {
       ];
       args: [
         {
-          name: 'didSeed';
+          name: 'did';
+          type: 'string';
+        },
+        {
+          name: 'authenticationId';
+          type: 'string';
+        },
+        {
+          name: 'credentialId';
+          type: 'string';
+        },
+        {
+          name: 'expireAt';
           type: {
-            array: ['u8', 20];
+            option: 'u64';
           };
         },
         {
-          name: 'verificationSeed';
-          type: {
-            array: ['u8', 20];
-          };
+          name: 'recoveryId';
+          type: 'u8';
         },
         {
-          name: 'authenticationSeed';
+          name: 'signature';
           type: {
-            array: ['u8', 20];
+            array: ['u8', 64];
           };
         },
       ];
     },
     {
-      name: 'addAssertion';
+      name: 'revokeCredential';
       accounts: [
         {
-          name: 'assertion';
+          name: 'credentialState';
           isMut: true;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'assertion_seed';
-              },
-            ];
-          };
         },
         {
           name: 'didDocument';
           isMut: false;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'did_seed';
-              },
-            ];
-          };
         },
         {
           name: 'verificationMethod';
           isMut: false;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'verification_seed';
-              },
-            ];
-          };
         },
         {
-          name: 'controller';
+          name: 'authentication';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'payer';
           isMut: true;
           isSigner: true;
         },
@@ -269,104 +222,25 @@ type VerifiableDataRegistry = {
       ];
       args: [
         {
-          name: 'didSeed';
+          name: 'did';
+          type: 'string';
+        },
+        {
+          name: 'authenticationId';
+          type: 'string';
+        },
+        {
+          name: 'credentialId';
+          type: 'string';
+        },
+        {
+          name: 'recoveryId';
+          type: 'u8';
+        },
+        {
+          name: 'signature';
           type: {
-            array: ['u8', 20];
-          };
-        },
-        {
-          name: 'verificationSeed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
-        {
-          name: 'assertionSeed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
-      ];
-    },
-    {
-      name: 'addKeyAgreement';
-      accounts: [
-        {
-          name: 'keyAgreement';
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'key_agreement_seed';
-              },
-            ];
-          };
-        },
-        {
-          name: 'didDocument';
-          isMut: false;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'did_seed';
-              },
-            ];
-          };
-        },
-        {
-          name: 'verificationMethod';
-          isMut: false;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'arg';
-                type: {
-                  array: ['u8', 20];
-                };
-                path: 'verification_seed';
-              },
-            ];
-          };
-        },
-        {
-          name: 'controller';
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'didSeed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
-        {
-          name: 'verificationSeed';
-          type: {
-            array: ['u8', 20];
-          };
-        },
-        {
-          name: 'keyAgreementSeed';
-          type: {
-            array: ['u8', 20];
+            array: ['u8', 64];
           };
         },
       ];
@@ -418,13 +292,19 @@ type VerifiableDataRegistry = {
       };
     },
     {
-      name: 'authentication';
+      name: 'verificationRelationship';
       type: {
         kind: 'struct';
         fields: [
           {
             name: 'did';
             type: 'string';
+          },
+          {
+            name: 'relationship';
+            type: {
+              defined: 'Relationship';
+            };
           },
           {
             name: 'keyId';
@@ -434,33 +314,80 @@ type VerifiableDataRegistry = {
       };
     },
     {
-      name: 'assertion';
+      name: 'credentialState';
       type: {
         kind: 'struct';
         fields: [
           {
-            name: 'did';
+            name: 'issuerDid';
             type: 'string';
           },
           {
-            name: 'keyId';
+            name: 'credentialId';
             type: 'string';
+          },
+          {
+            name: 'status';
+            type: {
+              defined: 'CredentialStatus';
+            };
+          },
+          {
+            name: 'expireAt';
+            type: {
+              option: 'u64';
+            };
+          },
+        ];
+      };
+    },
+  ];
+  types: [
+    {
+      name: 'Secp256k1Signature';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'recoveryId';
+            type: 'u8';
+          },
+          {
+            name: 'signature';
+            type: {
+              array: ['u8', 64];
+            };
           },
         ];
       };
     },
     {
-      name: 'keyAgreement';
+      name: 'Relationship';
       type: {
-        kind: 'struct';
-        fields: [
+        kind: 'enum';
+        variants: [
           {
-            name: 'did';
-            type: 'string';
+            name: 'Authentication';
           },
           {
-            name: 'keyId';
-            type: 'string';
+            name: 'Assertion';
+          },
+          {
+            name: 'KeyAgreement';
+          },
+        ];
+      };
+    },
+    {
+      name: 'CredentialStatus';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'Active';
+          },
+          {
+            name: 'Revoked';
           },
         ];
       };
@@ -471,6 +398,11 @@ type VerifiableDataRegistry = {
       code: 6000;
       name: 'Unauthorized';
       msg: 'Unauthorized';
+    },
+    {
+      code: 6001;
+      name: 'NotSupportKeyType';
+      msg: 'Not support key type';
     },
   ];
 };

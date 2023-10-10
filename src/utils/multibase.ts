@@ -4,6 +4,7 @@ export const MULTIBASE_PREFIX = {
   base58btc: 'z',
   base64: 'm',
   base64url: 'u',
+  hex: 'f',
 };
 
 export const decodeMultibase = (data: string): Buffer => {
@@ -19,6 +20,9 @@ export const decodeMultibase = (data: string): Buffer => {
     }
     case MULTIBASE_PREFIX.base58btc: {
       return utils.bytes.bs58.decode(encodedData);
+    }
+    case MULTIBASE_PREFIX.hex: {
+      return Buffer.from(encodedData, 'hex');
     }
     default: {
       throw new Error('Unsupported multibase prefix');

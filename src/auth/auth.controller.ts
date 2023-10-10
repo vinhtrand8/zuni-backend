@@ -40,7 +40,7 @@ export class AuthController {
       const tokenAuth = await this.authService.verifyWalletAuth(
         verifyWalletAuthDto,
       );
-      await this.authService.removeRequestAuthByUuid(uuid);
+      this.authService.removeRequestAuthByUuid(uuid);
 
       return tokenAuth;
     } catch (error) {

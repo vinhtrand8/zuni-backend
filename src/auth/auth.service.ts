@@ -1,8 +1,10 @@
+import { web3 } from '@coral-xyz/anchor';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes, randomUUID } from 'crypto';
+import { eddsa as EdDSA } from 'elliptic';
 import { Model } from 'mongoose';
 import { IResolverService } from 'src/resolver/interface.resolver.service';
 import { keyFromPublicKey } from 'src/utils/ec';
@@ -50,11 +52,25 @@ export class AuthService {
   async verifyWalletAuth(
     verifyWalletAuthDto: VerifyWalletAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, wallet } = verifyWalletAuthDto;
+    const { uuid, wallet, signature } = verifyWalletAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
     }
+    const { challenge } = auth;
+
+    const publicKey = new web3.PublicKey(wallet);
+    if (!publicKey) {
+      throw new Error('Can not find verification method');
+    }
+
+    const ec = new EdDSA('ed25519');
+    const key = ec.keyFromPublic(publicKey.toBuffer().toString('hex'));
+    const verified = key.verify(challenge, signature);
+    if (!verified) {
+      throw new Error('Invalid Signature');
+    }
+
     const payload: WalletJwtPayload = {
       wallet,
     };
