@@ -8,6 +8,7 @@ import { ResolverModule } from 'src/resolver/resolver.module';
 import { S3Module } from 'src/s3/s3.module';
 import { SSEModule } from 'src/sse/sse.module';
 import { VCModule } from 'src/vc/vc.module';
+import { TemplateModule } from './templates/templates.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { VCModule } from 'src/vc/vc.module';
     DIDsModule,
     S3Module,
     ResolverModule,
+    TemplateModule,
   ],
 })
 export class AppModule {}
