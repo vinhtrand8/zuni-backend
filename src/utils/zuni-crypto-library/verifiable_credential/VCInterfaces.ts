@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsInt,
   IsISO8601,
+  IsOptional,
   IsString,
   Max,
   MaxLength,
@@ -154,6 +155,7 @@ export class PublicCredential<
   @IsISO8601()
   issuanceDate: string;
 
+  @IsOptional()
   @IsISO8601()
   expirationDate?: string;
 

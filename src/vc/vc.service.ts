@@ -45,7 +45,7 @@ export class VCService {
   }
   async initVCUtilities() {
     await FFMathUtility.initialize();
-    ECCUtility.init('babyjub');
+    ECCUtility.init('secp256k1');
   }
 
   async storeNewIssuedVC(
@@ -54,18 +54,10 @@ export class VCService {
   ): Promise<PublicCredential<P>> {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);
-    const { assertion, verificationMethod } = didDocument;
-    const assertionKey = verificationMethod.find(
-      (method) => method.id === assertion[0],
-    );
-
-    if (!assertionKey) {
-      throw new Error('Invalid DID key');
-    }
-    const publicKey = decodeMultibase(assertionKey.publicKeyMultibase).toString(
-      'hex',
-    );
-
+    const { verificationMethod } = didDocument;
+    const publicKey =
+      '04' +
+      decodeMultibase(verificationMethod[0].publicKeyMultibase).toString('hex');
     // const uncompressedPrefix = ''; // 04
     // const formattedPublicKey = uncompressedPrefix + publicKey;
 
@@ -111,6 +103,7 @@ export class VCService {
       const issuedVCs = await this.publicCredentialModel.find({
         holder: { $in: dids },
       });
+
       return issuedVCs.map((x) => new PublicCredential(x.toObject()));
     } catch (error) {
       throw new Error(error.message);
@@ -120,26 +113,12 @@ export class VCService {
   async storeNewSchema(did: string, schemaData: Schema<P>): Promise<Schema<P>> {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);
-    // const { verificationMethod } = didDocument;
-    // const assertion = verificationMethod.find((method) =>
-    //   method.id.endsWith('#client'),
-    // );
-    // if (!assertion) {
-    //   throw new Error('Invalid DID key');
-    // }
-    // const publicKey = assertion.publicKeyMultibase;
 
-    const { assertion, verificationMethod } = didDocument;
-    const assertionKey = verificationMethod.find(
-      (method) => method.id === assertion[0],
-    );
+    const { verificationMethod } = didDocument;
 
-    if (!assertionKey) {
-      throw new Error('Invalid DID key');
-    }
-    const publicKey = decodeMultibase(assertionKey.publicKeyMultibase).toString(
-      'hex',
-    );
+    const publicKey = decodeMultibase(
+      verificationMethod[0].publicKeyMultibase,
+    ).toString('hex');
 
     if (schemaData.signatureProof.verificationMethod !== publicKey) {
       throw new Error('Invalid DID key');

@@ -59,6 +59,7 @@ export type VCPresentationModelDocument = HydratedDocument<
   VCPresentationModel<P, ZP>
 >;
 ///////////////////////////
+@SchemaDecorator()
 export class DataSignatureModel<
   P extends ECCCurvePoint,
 > extends BaseClassValidator<DataSignatureModel<P>> {
@@ -109,7 +110,7 @@ export const DataSignatureMongooseSchema =
 //   id: string;
 //   signatureProof: DataSignatureModel<P>;
 // };
-
+@SchemaDecorator()
 export class FieldIndexModel<
   P extends ECCCurvePoint,
 > extends BaseClassValidator<FieldIndexModel<P>> {
@@ -133,6 +134,7 @@ export class FieldIndexModel<
 export const FieldIndexMongooseSchema =
   SchemaFactory.createForClass(FieldIndexModel);
 
+@SchemaDecorator()
 export class PublicCredentialModel<
   P extends ECCCurvePoint,
 > extends BaseClassValidator<PublicCredentialModel<P>> {
@@ -141,7 +143,7 @@ export class PublicCredentialModel<
   id: string;
 
   @ApiProperty()
-  @Prop({ type: String })
+  @Prop({ type: [String] })
   types: string[];
 
   @ApiProperty()
@@ -218,7 +220,7 @@ export class PublicCredentialModel<
 }
 
 export const PublicCredentialMongooseSchema = SchemaFactory.createForClass(
-  PublicCredentialModel,
+  PublicCredentialModel<P>,
 );
 
 @SchemaDecorator()

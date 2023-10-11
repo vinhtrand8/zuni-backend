@@ -50,6 +50,7 @@ export class VCController {
       );
       return issuedVC;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }
