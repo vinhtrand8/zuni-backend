@@ -99,11 +99,13 @@ export class VCService {
     wallet: string,
   ): Promise<Array<PublicCredential<P>>> {
     try {
+      console.log(wallet);
       const dids = await this.resolverService.fetchDIDsByWallet(wallet);
+      console.log(dids);
       const issuedVCs = await this.publicCredentialModel.find({
         holder: { $in: dids },
       });
-
+      console.log(issuedVCs);
       return issuedVCs.map((x) => new PublicCredential(x.toObject()));
     } catch (error) {
       throw new Error(error.message);

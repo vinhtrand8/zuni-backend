@@ -81,6 +81,7 @@ export class VCController {
   async getCreatedVCsByWallet(
     @Account('wallet') wallet: string,
   ): Promise<Array<PublicCredential<P>>> {
+    console.log('new traffic ', wallet);
     try {
       const issuedVCs = await this.vcService.getCreatedVCsByWallet(wallet);
       return issuedVCs;
