@@ -1,4 +1,10 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SSEService } from 'src/sse/sse.service';
 import { AuthService } from './auth.service';
@@ -23,6 +29,19 @@ export class AuthController {
     try {
       const requestAuth = await this.authService.requestAuth();
       return requestAuth;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @ApiOkResponse({
+    type: Auth,
+  })
+  @Get('jwk')
+  async jwk(): Promise<JsonWebKey> {
+    try {
+      const jwk = this.authService.jwk();
+      return jwk;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

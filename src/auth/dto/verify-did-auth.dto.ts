@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 
 export class VerifyDIDAuthDto {
   @ApiProperty()
@@ -19,6 +19,7 @@ export class VerifyDIDAuthDto {
   signature: string;
 
   @ApiProperty()
-  @IsString()
-  privateKey: string;
+  @IsObject()
+  @IsOptional()
+  extra: Record<string, unknown>;
 }

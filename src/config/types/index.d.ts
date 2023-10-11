@@ -13,7 +13,6 @@ type SolanaConfig = {
 type Config = {
   privateKey: string;
   walletAddress: string;
-  jwtSecret: JwtSecretConfig;
   solana: SolanaConfig;
   s3: S3Config;
 };

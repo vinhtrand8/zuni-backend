@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 
 export class VerifyWalletAuthDto {
   @ApiProperty()
@@ -13,4 +13,9 @@ export class VerifyWalletAuthDto {
   @ApiProperty()
   @IsString()
   signature: string;
+
+  @ApiProperty()
+  @IsObject()
+  @IsOptional()
+  extra: Record<string, unknown>;
 }

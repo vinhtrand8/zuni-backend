@@ -39,3 +39,6 @@ lerna-debug.log*
 
 # Solana local cluster
 test-ledger
+
+# JWT secret key
+*.key

@@ -4,6 +4,12 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Generate JWT private key
+
+```
+yarn jwt
+```
+
 ### Commands
 
 - Run: `yarn install` for install all packages

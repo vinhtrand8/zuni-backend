@@ -27,12 +27,9 @@ export default () => {
     secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
   };
 
-  const jwtSecret = process.env.JWT_SECRET;
-
   const config: Config = {
     privateKey: process.env.PRIVATE_KEY,
     walletAddress: process.env.WALLET_ADDRESS,
-    jwtSecret,
     solana,
     s3,
   };

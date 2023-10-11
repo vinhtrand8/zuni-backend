@@ -1,11 +1,12 @@
 import { web3 } from '@coral-xyz/anchor';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { randomBytes, randomUUID } from 'crypto';
+import { createPublicKey, randomBytes, randomUUID } from 'crypto';
 import { eddsa as EdDSA } from 'elliptic';
+import fs from 'fs';
 import { Model } from 'mongoose';
+import path from 'path';
 import { IResolverService } from 'src/resolver/interface.resolver.service';
 import { keyFromPublicKey } from 'src/utils/ec';
 import { decodeMultibase } from 'src/utils/multibase';
@@ -16,21 +17,35 @@ import { Auth } from './schemas/auth.schema';
 
 @Injectable()
 export class AuthService {
-  private readonly jwtSecret: string;
+  private readonly jwtPrivateKey: Buffer;
+  private readonly jwtAlgo = 'ES256';
 
   constructor(
     @InjectModel(Auth.name) private readonly authModel: Model<Auth>,
     @Inject(IResolverService)
     private readonly resolverService: IResolverService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
   ) {
-    this.jwtSecret = this.configService.getOrThrow('jwtSecret');
+    const jwtPrivateKeyName = 'jwt-private-key.key';
+    this.jwtPrivateKey = fs.readFileSync(
+      path.join(process.cwd(), jwtPrivateKeyName),
+    );
+  }
+
+  jwk(): JsonWebKey {
+    const publicKey = createPublicKey(this.jwtPrivateKey);
+    return publicKey.export({ format: 'jwk' });
   }
 
   async verifyToken(token: string): Promise<DidJwtPayload | WalletJwtPayload> {
+    const publicKey = createPublicKey(this.jwtPrivateKey).export({
+      format: 'pem',
+      type: 'spki',
+    });
+
     return this.jwtService.verifyAsync(token, {
-      secret: this.jwtSecret,
+      algorithms: [this.jwtAlgo],
+      publicKey,
     });
   }
 
@@ -52,7 +67,7 @@ export class AuthService {
   async verifyWalletAuth(
     verifyWalletAuthDto: VerifyWalletAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, wallet, signature } = verifyWalletAuthDto;
+    const { uuid, wallet, signature, extra } = verifyWalletAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
@@ -73,9 +88,11 @@ export class AuthService {
 
     const payload: WalletJwtPayload = {
       wallet,
+      extra,
     };
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.jwtSecret,
+      algorithm: this.jwtAlgo,
+      privateKey: this.jwtPrivateKey,
     });
     const tokenAuth: TokenAuthDto = {
       accessToken,
@@ -88,8 +105,7 @@ export class AuthService {
   async verifyDIDAuth(
     verifyDIDAuthDto: VerifyDIDAuthDto,
   ): Promise<TokenAuthDto> {
-    const { uuid, did, authenticationId, signature, privateKey } =
-      verifyDIDAuthDto;
+    const { uuid, did, authenticationId, signature, extra } = verifyDIDAuthDto;
     const auth = await this.authModel.findOne({ uuid });
     if (!auth) {
       throw new Error('uuid not found');
@@ -114,16 +130,16 @@ export class AuthService {
 
     const payload: DidJwtPayload = {
       did,
-      privateKey,
+      extra,
     };
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.jwtSecret,
+      algorithm: this.jwtAlgo,
+      privateKey: this.jwtPrivateKey,
     });
 
     const tokenAuth: TokenAuthDto = {
       accessToken,
       did,
-      privateKey,
     };
     return tokenAuth;
   }
