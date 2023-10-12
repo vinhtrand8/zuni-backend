@@ -103,7 +103,9 @@ export class SolanaService implements IResolverService {
         },
       ]);
 
-    return didAccounts.map(({ account }) => account.did);
+    return didAccounts.map(({ account }) =>
+      this.convertToDidUrlFormat(account.did),
+    );
   }
 
   async fetchNumberOfDidsOwnedByController(

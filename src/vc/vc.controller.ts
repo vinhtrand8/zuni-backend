@@ -33,6 +33,17 @@ class SimpleInputDTO<T> {
 export class VCController {
   constructor(private readonly vcService: VCService) {}
 
+  @Post('log')
+  async log(@Body() bodyData: any): Promise<void> {
+    try {
+      console.log('NEw log request ...');
+      console.log(bodyData);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error.message);
+    }
+  }
+
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @ApiOkResponse({
@@ -108,6 +119,7 @@ export class VCController {
       );
       return newSchemaData;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }
@@ -120,6 +132,7 @@ export class VCController {
     @Body() schemaIdInput: SimpleInputDTO<string>,
   ): Promise<Schema<P>> {
     try {
+      console.log('Fetch schema by id ', schemaIdInput.data);
       const schema = await this.vcService.fetchSchemaById(schemaIdInput.data);
       return schema;
     } catch (error) {
