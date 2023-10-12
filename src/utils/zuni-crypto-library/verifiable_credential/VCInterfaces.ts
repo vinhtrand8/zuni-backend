@@ -244,12 +244,12 @@ export class SchemaCredentialCheck<
 > extends BaseClassValidator<SchemaCredentialCheck<P>> {
   fieldValidationObject: JSON;
   fieldIndexes: Array<FieldIndex<P>>;
-  fieldMerkleRoot: BigNumberish;
+  fieldMerkleRoot: string;
 
   constructor(data: {
     fieldValidationObject: JSON;
     fieldIndexes: Array<FieldIndex<P>>;
-    fieldMerkleRoot: BigNumberish;
+    fieldMerkleRoot: string;
   }) {
     super(data);
     this.fieldValidationObject = data.fieldValidationObject;
@@ -263,7 +263,7 @@ export class SchemaCredentialCheck<
         JSON.stringify(this.fieldValidationObject),
       ),
       fieldIndexes: this.fieldIndexes.map((x) => x.clone()),
-      fieldMerkleRoot: JSON.parse(JSON.stringify(this.fieldMerkleRoot)),
+      fieldMerkleRoot: this.fieldMerkleRoot,
     });
   }
 }

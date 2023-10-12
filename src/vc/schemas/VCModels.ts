@@ -6,7 +6,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument } from 'mongoose';
 
-import { ProofPurpose } from '@/src/utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
+import {
+  ProofPurpose,
+  PublicCredential,
+} from '@/src/utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -14,6 +17,7 @@ import {
   IsEnum,
   IsInt,
   IsISO8601,
+  IsOptional,
   IsString,
   Max,
   MaxLength,
@@ -171,6 +175,7 @@ export class PublicCredentialModel<
 
   @ApiProperty()
   @Prop({ type: String })
+  @IsOptional()
   @IsISO8601()
   expirationDate?: string;
 
@@ -236,18 +241,18 @@ export class SchemaCredentialCheckModel<
   fieldIndexes: Array<FieldIndexModel<P>>;
 
   @ApiProperty()
-  @Prop({ type: [Number] })
-  fieldMerkleRoot: Array<number>;
+  @Prop({ type: String })
+  fieldMerkleRoot: string;
 
   constructor(data: {
     fieldValidationObject: JSON;
     fieldIndexes: Array<FieldIndexModel<P>>;
-    fieldMerkleRoot: Array<number>;
+    fieldMerkleRoot: string;
   }) {
     super(data);
     this.fieldValidationObject = data.fieldValidationObject;
     this.fieldIndexes = data.fieldIndexes;
-    this.fieldMerkleRoot = Array.from(data.fieldMerkleRoot);
+    this.fieldMerkleRoot = data.fieldMerkleRoot;
   }
 }
 
@@ -416,9 +421,9 @@ export class VCPresentationModel<
   holder: string;
 
   @ApiProperty()
-  @Prop({ type: [PublicCredentialMongooseSchema] })
+  @Prop({ type: [Object] })
   @IsArray()
-  publicCredentials: Array<PublicCredentialModel<P>>;
+  publicCredentials: Array<PublicCredential<P>>;
 
   @ApiProperty()
   @Prop({ type: () => SchemaMongooseSchema })
@@ -447,7 +452,7 @@ export class VCPresentationModel<
   constructor(data: {
     id: string;
     holder: string;
-    publicCredentials: Array<PublicCredentialModel<P>>;
+    publicCredentials: Array<PublicCredential<P>>;
     schema: SchemaModel<P>;
     encryptedData: string;
     signatureProof: DataSignatureModel<P>;

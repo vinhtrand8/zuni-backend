@@ -165,10 +165,11 @@ export class VCController {
   ): Promise<VCPresentation<P, ZP>> {
     try {
       const newVCPresentation = await this.vcService.storeNewVCPresentation(
-        vcPresentationData.data,
+        new VCPresentation(vcPresentationData.data),
       );
       return new VCPresentation(newVCPresentation);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }

@@ -115,6 +115,10 @@ export class VCService {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);
 
+    if (!verifyValidSchema(schemaData)) {
+      throw new Error('Schema is not valid');
+    }
+
     const { verificationMethod } = didDocument;
 
     const publicKey =
