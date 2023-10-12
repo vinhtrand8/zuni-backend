@@ -42,3 +42,6 @@ test-ledger
 
 # JWT secret key
 *.key
+
+
+.env.cd
