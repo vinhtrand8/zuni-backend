@@ -12,7 +12,7 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Account } from 'src/auth/decorators/account.decorators';
 import {
@@ -20,8 +20,8 @@ import {
   Schema,
   VCPresentation,
 } from '../utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
-import { P, ZP } from './schemas/VCModels';
-import { SubmissionStatus, VCService } from './vc.service';
+import { P, VCSubmissionStatus, ZP } from './schemas/VCModels';
+import { VCService } from './vc.service';
 
 class SimpleInputDTO<T> {
   @ApiProperty()
@@ -185,6 +185,7 @@ export class VCController {
     @Account('did') did: string,
     @Body() schemaIdData: SimpleInputDTO<string>,
   ): Promise<Array<VCPresentation<P, ZP>>> {
+    console.log('Getting did ', did);
     try {
       const schemaSubmissions = await this.vcService.fetchSchemaSubmissions(
         did,
@@ -221,17 +222,20 @@ export class VCController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Post('change-submissions-status')
-  async changeSubmissionStatus(
+  @ApiOkResponse({
+    type: VCPresentation<P, ZP>,
+  })
+  @Post('change-submission-status')
+  async updateSubmissionsStatus(
     // for verifier
     @Account('did') did: string,
     @Body()
     changeSubmissionStatusData: SimpleInputDTO<ChangeVCPresentationStatusInputDto>,
-  ): Promise<void> {
+  ): Promise<VCPresentation<P, ZP>> {
     try {
-      await this.vcService.changeSubmissionStatus(
+      return await this.vcService.changeSubmissionStatus(
         did,
-        changeSubmissionStatusData.data.schemaIds,
+        changeSubmissionStatusData.data.submissionId,
         changeSubmissionStatusData.data.newStatus,
       );
     } catch (error) {
@@ -242,11 +246,10 @@ export class VCController {
 class ChangeVCPresentationStatusInputDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsArray()
-  schemaIds: string[];
+  submissionId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsEnum(SubmissionStatus)
-  newStatus: SubmissionStatus;
+  @IsEnum(VCSubmissionStatus)
+  newStatus: VCSubmissionStatus;
 }

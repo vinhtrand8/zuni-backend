@@ -405,6 +405,12 @@ export const SingleCredentialFieldValidationSnarkProofMongooseSchema =
   SchemaFactory.createForClass(SingleCredentialFieldValidationSnarkProofModel);
 
 /// VC
+
+export enum VCSubmissionStatus {
+  VERIFIED = 'VERIFIED',
+  NOT_VERIFIED = 'NOT_VERIFIED',
+  REJECTED = 'REJECTED',
+}
 @SchemaDecorator()
 export class VCPresentationModel<
   P extends ECCCurvePoint,
@@ -449,6 +455,10 @@ export class VCPresentationModel<
   @Prop({ type: DataSignatureMongooseSchema })
   signatureProof: DataSignatureModel<P>;
 
+  @ApiProperty()
+  @Prop({ type: String })
+  status?: string;
+
   constructor(data: {
     id: string;
     holder: string;
@@ -468,6 +478,7 @@ export class VCPresentationModel<
     this.encryptedData = data.encryptedData;
     this.signatureProof = data.signatureProof;
     this.fieldValidationProofs = data.fieldValidationProofs;
+    this.status = VCSubmissionStatus.NOT_VERIFIED;
   }
 }
 

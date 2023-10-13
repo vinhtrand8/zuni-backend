@@ -21,14 +21,10 @@ import {
   PublicCredentialModel,
   SchemaModel,
   VCPresentationModel,
+  VCSubmissionStatus,
   ZP,
 } from './schemas/VCModels';
 
-export enum SubmissionStatus {
-  VERIFIED = 'VERIFIED',
-  NOT_VERIFIED = 'NOT_VERIFIED',
-  REJECTED = 'REJECTED',
-}
 @Injectable()
 export class VCService {
   constructor(
@@ -164,17 +160,17 @@ export class VCService {
     vcPresentationData: VCPresentation<P, ZP>,
   ): Promise<VCPresentation<P, ZP>> {
     //
-    verifyVCPresentationFormat(vcPresentationData);
+    if (!verifyVCPresentationFormat(vcPresentationData))
+      throw new Error('Invalid VC Presentation format');
 
     const presentation = await this.vcPresentationModel.findOne({
-      id: vcPresentationData.id,
+      'schema.verifier': vcPresentationData.schema.verifier,
+      holder: vcPresentationData.holder,
     });
 
     // okay valid VC
     if (presentation) {
-      Object.assign(presentation, { ...vcPresentationData });
-
-      return presentation.save().then((x) => new VCPresentation(x.toObject()));
+      return new VCPresentation(presentation.toObject());
     } else {
       const newPresentation = new this.vcPresentationModel({
         ...vcPresentationData,
@@ -216,47 +212,32 @@ export class VCService {
     }
   }
 
+  // API for verifier
   async changeSubmissionStatus(
-    // this is for verifier
     did: string,
-    submissionIds: Array<string>,
-    newStatus: SubmissionStatus,
-  ) {
-    const submissions = await this.vcPresentationModel.find({
-      id: {
-        $in: submissionIds,
-      },
+    submissionId: string,
+    newStatus: VCSubmissionStatus,
+  ): Promise<VCPresentation<P, ZP>> {
+    const submission = await this.vcPresentationModel.findOne({
+      id: submissionId,
     });
 
-    const foundSubmissions = {};
-
-    for (let i = 0; i < submissions.length; ++i) {
-      foundSubmissions[submissions[i].id] = true;
-      if (submissions[i].schema.verifier !== did) {
-        throw new Error(
-          `${did} is not verifier of submission ${submissions[i].id}`,
-        );
-      }
-    }
-    // validate correct submission Ids
-    for (let i = 0; i < submissionIds.length; ++i) {
-      if (!foundSubmissions.hasOwnProperty(submissionIds[i])) {
-        throw new Error(
-          `Submission #${submissionIds[i]} not exists or not accessible`,
-        );
-      }
+    if (!submission) {
+      throw new Error(`Submission ${submissionId} not found`);
     }
 
-    return this.vcPresentationModel.updateMany(
-      {
-        'schema.verifier': did,
-        id: {
-          $in: submissionIds,
-        },
-      },
-      {
-        status: newStatus,
-      },
-    );
+    if (submission.schema.verifier !== convertToDidUrlFormat(did)) {
+      throw new Error(`${did} is not verifier of submission ${submissionId}`);
+    }
+
+    if (submission.status !== VCSubmissionStatus.NOT_VERIFIED) {
+      throw new Error(`Submission ${submissionId} is already verified`);
+    }
+
+    // batch update status
+    submission.status = newStatus;
+    await submission.save();
+
+    return new VCPresentation(submission.toObject());
   }
 }
