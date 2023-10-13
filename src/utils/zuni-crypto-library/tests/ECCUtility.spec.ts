@@ -13,7 +13,7 @@ describe('ECCUtility lib', function () {
   });
 
   it('ECDH test', () => {
-    const testRunner = <_P extends ECCCurvePoint>() => {
+    const testRunner = () => {
       const sender = ECCUtility.genKeyPair();
       const receiver = ECCUtility.genKeyPair();
 
@@ -34,10 +34,10 @@ describe('ECCUtility lib', function () {
     };
 
     ECCUtility.init('secp256k1');
-    testRunner<Secp256k1CurvePoint>();
+    testRunner();
     //
     ECCUtility.init('babyjub');
-    testRunner<BabyJubCurvePoint>();
+    testRunner();
   });
 
   it('ECDSA test', async () => {

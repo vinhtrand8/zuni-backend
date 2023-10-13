@@ -36,24 +36,24 @@ import {
   VCSynthesisError,
 } from './VCInterfaces';
 
-function _getOp(opStr: string): NativeOperator {
-  switch (opStr) {
-    case '$EQ':
-      return NativeOperator.EQ;
-    case '$NE':
-      return NativeOperator.NE;
-    case '$LT':
-      return NativeOperator.LT;
-    case '$GTE':
-      return NativeOperator.GTE;
-    case '$GT':
-      return NativeOperator.GT;
-    case '$LTE':
-      return NativeOperator.LTE;
-    default:
-      return NativeOperator.INVALID_OP;
-  }
-}
+// function _getOp(opStr: string): NativeOperator {
+//   switch (opStr) {
+//     case '$EQ':
+//       return NativeOperator.EQ;
+//     case '$NE':
+//       return NativeOperator.NE;
+//     case '$LT':
+//       return NativeOperator.LT;
+//     case '$GTE':
+//       return NativeOperator.GTE;
+//     case '$GT':
+//       return NativeOperator.GT;
+//     case '$LTE':
+//       return NativeOperator.LTE;
+//     default:
+//       return NativeOperator.INVALID_OP;
+//   }
+// }
 
 function getOpId(opStr: string): number {
   switch (opStr) {

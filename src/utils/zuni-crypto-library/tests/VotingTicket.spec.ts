@@ -34,7 +34,7 @@ describe('VotingTicket class tests', function () {
         );
 
       assert.throws(() => {
-        const _votingTicket_ = new VotingTicket({
+        new VotingTicket({
           votingOptionChanges: votingOptionChanges,
           votingPowerMerkleProof: [0],
           validVoterMerkleProof: [0],
@@ -44,7 +44,7 @@ describe('VotingTicket class tests', function () {
         });
       }, ClassPropertyValidationError);
 
-      const _votingTicket_ = new VotingTicket({
+      const validVotingTicket = new VotingTicket({
         votingOptionChanges: votingOptionChanges,
         votingPowerMerkleProof: new Array<number>(SMT_LEVEL).fill(0),
         validVoterMerkleProof: new Array<number>(SMT_LEVEL).fill(0),
@@ -52,6 +52,8 @@ describe('VotingTicket class tests', function () {
         committeePublicKey: ECCUtility.getDefaultPublicKey(),
         voterIndex: 0,
       });
+
+      expect(validVotingTicket);
     };
 
     ECCUtility.init('secp256k1');

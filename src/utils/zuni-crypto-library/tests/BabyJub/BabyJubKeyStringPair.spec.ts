@@ -1,16 +1,14 @@
 import { BN } from 'bn.js';
 import { assert } from 'chai';
 import { Point } from 'circomlibjs';
-import { BabyJubCurvePoint } from 'library/BabyJub/BabyJubBasePoint';
 import { FFMathUtility } from 'library/BabyJub/FFMathUtility';
-import { ECCCurvePoint } from 'library/interfaces/BasePoint';
 
 describe('BabyJubKeyStringPair class tests', function () {
   before(async () => {
     await FFMathUtility.initialize();
   });
   it('create new key string pair objects', () => {
-    (async <_P extends ECCCurvePoint>() => {
+    const test = async () => {
       const sk = BigInt(
         '12062235059128150724140304935969637827082776004512811357721318686093323707',
       );
@@ -28,11 +26,13 @@ describe('BabyJubKeyStringPair class tests', function () {
 
       //  12062235059128150724140304935969637827082776004512811357721318686093323707  * G =  16615746963028696677018428614198711496571701930924944283712342977161475370589 / 17352060016259064550698589367725650417374780253567961166772033417671818251070
       assert.equal(pk.toString(), expectedResult.toString());
-    })<BabyJubCurvePoint>();
+    };
+
+    test();
   });
 
   it('add two points', () => {
-    (async <_P extends ECCCurvePoint>() => {
+    const addTwoPointTest = async () => {
       const p1: Point = [
         FFMathUtility.F.e(
           '17777552123799933955779906779655732241715742912184938656739573121738514868268',
@@ -78,6 +78,8 @@ describe('BabyJubKeyStringPair class tests', function () {
 
       assert.equal(res.toString(), babyjubjubRsPrimeFieldReprOutput.toString());
       assert.equal(expectedResult.toString(), res.toString());
-    })<BabyJubCurvePoint>().catch((err) => console.log(err));
+    };
+
+    addTwoPointTest().catch((err) => console.log(err));
   });
 });

@@ -25,4 +25,4 @@ COPY --chown=node:node --from=builder /app/node_modules /app/node_modules
 USER node
 
 EXPOSE 5000
-CMD ["node", "/app/dist/main.js"]
+CMD ["node", "/app/dist/src/main.js"]

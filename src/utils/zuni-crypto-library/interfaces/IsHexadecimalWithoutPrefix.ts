@@ -25,7 +25,7 @@ export class IsHexadecimalWithoutPrefix
     return true;
   }
 
-  defaultMessage(_args: ValidationArguments) {
+  defaultMessage() {
     return `$property must be a non-empty hexadecimal string`;
   }
 }
