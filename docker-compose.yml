@@ -10,4 +10,9 @@ services:
       - 5000:5000
     volumes:
       - .env:/app/.env
+      - jwt-private-key.key:/app/jwt-private-key.key
     restart: always
+
+volumes:
+  .env:
+  jwt-private-key.key:
