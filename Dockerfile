@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-ARG NODE_VERSION=16.13
+ARG NODE_VERSION=18.18
 
 FROM node:${NODE_VERSION}-alpine as builder
 
@@ -13,6 +13,8 @@ COPY ./src src
 
 RUN npm install
 RUN npm run build
+RUN npm run jwt
+RUN ls -la
 
 FROM node:${NODE_VERSION}-alpine as production
 WORKDIR /app
