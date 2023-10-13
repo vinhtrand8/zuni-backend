@@ -1,4 +1,4 @@
-version: "3.5"
+version: '3.5'
 services:
   zuni-api-sevice:
     build:
@@ -9,10 +9,6 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - .env:/app/.env
-      - jwt-private-key.key:/app/jwt-private-key.key
+      - ./.env:/app/.env
+      - ./jwt-private-key.key:/app/jwt-private-key.key
     restart: always
-
-volumes:
-  .env:
-  jwt-private-key.key:
