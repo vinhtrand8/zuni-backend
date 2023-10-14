@@ -164,7 +164,7 @@ export class VCService {
       throw new Error('Invalid VC Presentation format');
 
     const presentation = await this.vcPresentationModel.findOne({
-      'schema.verifier': vcPresentationData.schema.verifier,
+      'schema.id': vcPresentationData.schema.id,
       holder: vcPresentationData.holder,
     });
 
@@ -186,11 +186,11 @@ export class VCService {
     did: string,
     schemaId: string,
   ): Promise<Array<VCPresentation<P, ZP>>> {
-    console.log(schemaId, did);
-    return this.vcPresentationModel.find({
+    const presentations = await this.vcPresentationModel.find({
       'schema.verifier': convertToDidUrlFormat(did),
       'schema.id': schemaId,
     });
+    return presentations.map((x) => new VCPresentation(x.toObject()));
   }
 
   async fetchHolderSubmissions(
@@ -230,14 +230,18 @@ export class VCService {
       throw new Error(`${did} is not verifier of submission ${submissionId}`);
     }
 
-    if (submission.status !== VCSubmissionStatus.NOT_VERIFIED) {
-      throw new Error(`Submission ${submissionId} is already verified`);
-    }
+    // if (submission.status !== VCSubmissionStatus.NOT_VERIFIED) {
+    //   throw new Error(`Submission ${submissionId} is already verified`);
+    // }
 
-    // batch update status
-    submission.status = newStatus;
-    await submission.save();
+    await this.vcPresentationModel.updateOne({
+      id: submissionId,
+      status: newStatus,
+    });
 
-    return new VCPresentation(submission.toObject());
+    const newSubmission = await this.vcPresentationModel.findOne({
+      id: submissionId,
+    });
+    return new VCPresentation(newSubmission.toObject());
   }
 }

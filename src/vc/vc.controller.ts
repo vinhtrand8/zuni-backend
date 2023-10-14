@@ -185,7 +185,6 @@ export class VCController {
     @Account('did') did: string,
     @Body() schemaIdData: SimpleInputDTO<string>,
   ): Promise<Array<VCPresentation<P, ZP>>> {
-    console.log('Getting did ', did);
     try {
       const schemaSubmissions = await this.vcService.fetchSchemaSubmissions(
         did,
@@ -239,6 +238,7 @@ export class VCController {
         changeSubmissionStatusData.data.newStatus,
       );
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }
