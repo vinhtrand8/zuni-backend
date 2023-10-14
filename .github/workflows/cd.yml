@@ -42,6 +42,12 @@ jobs:
           username: ${{ env.CD_USERNAME }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+          token: ${{ secrets.SUPER_ACCESS_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -78,8 +84,8 @@ jobs:
             echo AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} >> .env
             echo AWS_S3_REGION=${{ secrets.AWS_S3_REGION }} >> .env
             echo VERIFIABLE_DATA_REGISTRY_PROGRAM_ID=${{ secrets.VERIFIABLE_DATA_REGISTRY_PROGRAM_ID }} >> .env
+            echo NETWORK=${{ secrets.NETWORK }} >> .env
             curl -s https://${{ secrets.SUPER_ACCESS_TOKEN }}@raw.githubusercontent.com/dv-lab/zuni-backend3/main/docker-compose.yml -o docker-compose.yml
             docker-compose down
             docker-compose up -d
             docker logout ${{ env.REGISTRY }}
-            
