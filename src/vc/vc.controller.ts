@@ -12,14 +12,14 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Account } from 'src/auth/decorators/account.decorators';
 import {
   PublicCredential,
   Schema,
   VCPresentation,
-} from '../utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
+} from '@zuni-crypto-library/verifiable_credential/VCInterfaces';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Account } from 'src/auth/decorators/account.decorators';
 import { P, VCSubmissionStatus, ZP } from './schemas/VCModels';
 import { VCService } from './vc.service';
 
@@ -185,7 +185,6 @@ export class VCController {
     @Account('did') did: string,
     @Body() schemaIdData: SimpleInputDTO<string>,
   ): Promise<Array<VCPresentation<P, ZP>>> {
-    console.log('Getting did ', did);
     try {
       const schemaSubmissions = await this.vcService.fetchSchemaSubmissions(
         did,
@@ -239,6 +238,7 @@ export class VCController {
         changeSubmissionStatusData.data.newStatus,
       );
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }

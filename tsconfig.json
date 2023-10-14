@@ -27,8 +27,8 @@
       "@/src/*": [
         "src/*"
       ],
-      "library/*": [
-        "src/utils/zuni-crypto-library/*"
+      "@zuni-crypto-library/*": [
+        "src/utils/zuni-programs3/library/*"
       ]
     }
   }
