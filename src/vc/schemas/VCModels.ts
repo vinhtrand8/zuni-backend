@@ -7,9 +7,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument } from 'mongoose';
 
 import {
+  MAX_CHECK_SIZE,
+  MAX_NUM_CHECKS,
+  VC_SMT_LEVEL,
+} from '@zuni-crypto-library/constants/VCConstants';
+import { BaseClassValidator } from '@zuni-crypto-library/interfaces/BaseClassValidator';
+import { ECCCurvePoint } from '@zuni-crypto-library/interfaces/BasePoint';
+import { IsHexadecimalWithoutPrefix } from '@zuni-crypto-library/interfaces/IsHexadecimalWithoutPrefix';
+import { ZKProof } from '@zuni-crypto-library/interfaces/ZKEngine';
+import {
   ProofPurpose,
   PublicCredential,
-} from '@/src/utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
+} from '@zuni-crypto-library/verifiable_credential/VCInterfaces';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -25,18 +34,9 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import {
-  MAX_CHECK_SIZE,
-  MAX_NUM_CHECKS,
-  VC_SMT_LEVEL,
-} from 'library/constants/VCConstants';
-import { BaseClassValidator } from 'library/interfaces/BaseClassValidator';
-import { ECCCurvePoint } from 'library/interfaces/BasePoint';
-import { IsHexadecimalWithoutPrefix } from 'library/interfaces/IsHexadecimalWithoutPrefix';
-import { ZKProof } from 'library/interfaces/ZKEngine';
 
-import { BabyJubCurvePoint } from '@/src/utils/zuni-crypto-library/BabyJub/BabyJubBasePoint';
-import { InterfaceWithoutMethodsOf } from '@/src/utils/zuni-crypto-library/interfaces/InterfaceWithoutMethodsOf';
+import { BabyJubCurvePoint } from '@zuni-crypto-library/BabyJub/BabyJubBasePoint';
+import { InterfaceWithoutMethodsOf } from '@zuni-crypto-library/interfaces/InterfaceWithoutMethodsOf';
 import * as snarkjs from 'snarkjs';
 type Groth16Proof = snarkjs.Groth16Proof;
 

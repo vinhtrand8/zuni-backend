@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { IResolverService } from '../resolver/interface.resolver.service';
-import { convertToDidUrlFormat, decodeMultibase } from '../utils/multibase';
-import { FFMathUtility } from '../utils/zuni-crypto-library/BabyJub/FFMathUtility';
-import { ECCUtility } from '../utils/zuni-crypto-library/utility/ECCUtility';
+import { FFMathUtility } from '@zuni-crypto-library/BabyJub/FFMathUtility';
+import { ECCUtility } from '@zuni-crypto-library/utility/ECCUtility';
 import {
   PublicCredential,
   Schema,
   VCPresentation,
   VCSynthesisError,
-} from '../utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
+} from '@zuni-crypto-library/verifiable_credential/VCInterfaces';
 import {
   verifyValidPublicCredential,
   verifyValidSchema,
   verifyVCPresentationFormat,
-} from '../utils/zuni-crypto-library/verifiable_credential/VCUtility';
+} from '@zuni-crypto-library/verifiable_credential/VCUtility';
+import { Model } from 'mongoose';
+import { IResolverService } from '../resolver/interface.resolver.service';
+import { convertToDidUrlFormat, decodeMultibase } from '../utils/multibase';
 import {
   P,
   PublicCredentialModel,

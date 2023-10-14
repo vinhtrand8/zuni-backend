@@ -11,7 +11,7 @@ COPY *.json ./
 
 COPY ./src src
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npm run build
 
 FROM node:${NODE_VERSION}-alpine as production

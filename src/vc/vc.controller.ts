@@ -12,14 +12,14 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Account } from 'src/auth/decorators/account.decorators';
 import {
   PublicCredential,
   Schema,
   VCPresentation,
-} from '../utils/zuni-crypto-library/verifiable_credential/VCInterfaces';
+} from '@zuni-crypto-library/verifiable_credential/VCInterfaces';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Account } from 'src/auth/decorators/account.decorators';
 import { P, VCSubmissionStatus, ZP } from './schemas/VCModels';
 import { VCService } from './vc.service';
 
