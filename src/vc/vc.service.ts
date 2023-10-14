@@ -107,6 +107,17 @@ export class VCService {
     }
   }
 
+  async getCreatedVCsByDid(did: string): Promise<Array<PublicCredential<P>>> {
+    try {
+      const issuedVCs = await this.publicCredentialModel.find({
+        holder: { $in: convertToDidUrlFormat(did) },
+      });
+      return issuedVCs.map((x) => new PublicCredential(x.toObject()));
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async storeNewSchema(did: string, schemaData: Schema<P>): Promise<Schema<P>> {
     const didDocument: DIDDocumentView =
       await this.resolverService.fetchDIDDocument(did);

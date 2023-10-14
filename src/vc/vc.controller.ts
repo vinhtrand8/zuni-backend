@@ -79,6 +79,8 @@ export class VCController {
       const createdVCs = await this.vcService.fetchCreatedVCsByIssuerDID(did);
       return createdVCs;
     } catch (error) {
+      console.log(error);
+
       throw new BadRequestException(error.message);
     }
   }
@@ -97,6 +99,25 @@ export class VCController {
       const issuedVCs = await this.vcService.getCreatedVCsByWallet(wallet);
       return issuedVCs;
     } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiOkResponse({
+    type: [PublicCredential<P>],
+  })
+  @Get('issued-vcs-by-did')
+  async getCreatedVCsByDid(
+    @Account('did') did: string,
+  ): Promise<Array<PublicCredential<P>>> {
+    try {
+      const issuedVCs = await this.vcService.getCreatedVCsByDid(did);
+      return issuedVCs;
+    } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.message);
     }
   }
