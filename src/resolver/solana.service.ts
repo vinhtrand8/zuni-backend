@@ -13,7 +13,7 @@ import { IResolverService } from './interface.resolver.service';
 
 export const ZUNI_DID_PREFIX = {
   solana: {
-    devnet: 'did:zuni:solana:devnet:',
+    devnet: 'did:zuni:solana:',
   },
 };
 
