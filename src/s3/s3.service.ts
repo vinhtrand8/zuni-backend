@@ -24,16 +24,15 @@ export class S3Service {
 
   async upload(fileName: string, fileContent: Buffer) {
     try {
-      const imgName = fileName + new Date().getTime();
       const params = {
         Bucket: this.configService.getOrThrow('AWS_S3_BUCKET_NAME'),
-        Key: imgName,
+        Key: fileName,
         Body: fileContent,
         ACL: 'public-read',
       };
       await this.s3Client.send(new PutObjectCommand(params));
 
-      return `${this.objectBaseUrl}/${encodeURIComponent(imgName)}`;
+      return `${this.objectBaseUrl}/${encodeURIComponent(fileName)}`;
     } catch (error) {
       throw new Error(error.message);
     }
