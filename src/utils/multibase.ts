@@ -1,5 +1,4 @@
 import { utils } from '@coral-xyz/anchor';
-import { ZUNI_DID_PREFIX } from '../resolver/solana.service';
 
 export const MULTIBASE_PREFIX = {
   base58btc: 'z',
@@ -31,6 +30,6 @@ export const decodeMultibase = (data: string): Buffer => {
   }
 };
 
-export function convertToDidUrlFormat(did: string) {
-  return ZUNI_DID_PREFIX.solana.devnet + did;
-}
+// export function convertToDidUrlFormat(did: string) {
+//   return ZUNI_DID_PREFIX.solana.devnet + did;
+// }

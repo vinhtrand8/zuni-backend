@@ -15,7 +15,7 @@ import {
 } from '@zuni-crypto-library/verifiable_credential/VCUtility';
 import { Model } from 'mongoose';
 import { IResolverService } from '../resolver/interface.resolver.service';
-import { convertToDidUrlFormat, decodeMultibase } from '../utils/multibase';
+import { decodeMultibase } from '../utils/multibase';
 import {
   P,
   PublicCredentialModel,
@@ -88,7 +88,7 @@ export class VCService {
     did: string,
   ): Promise<Array<PublicCredential<P>>> {
     return this.publicCredentialModel.find({
-      issuer: convertToDidUrlFormat(did),
+      issuer: did,
     });
   }
 
@@ -110,7 +110,7 @@ export class VCService {
   async getCreatedVCsByDid(did: string): Promise<Array<PublicCredential<P>>> {
     try {
       const issuedVCs = await this.publicCredentialModel.find({
-        holder: { $in: convertToDidUrlFormat(did) },
+        holder: { $in: did },
       });
       return issuedVCs.map((x) => new PublicCredential(x.toObject()));
     } catch (error) {
@@ -164,7 +164,7 @@ export class VCService {
     // for issuer
     did: string,
   ): Promise<Array<Schema<P>>> {
-    return this.schemaModel.find({ verifier: convertToDidUrlFormat(did) });
+    return this.schemaModel.find({ verifier: did });
   }
 
   async storeNewVCPresentation(
@@ -198,7 +198,7 @@ export class VCService {
     schemaId: string,
   ): Promise<Array<VCPresentation<P, ZP>>> {
     const presentations = await this.vcPresentationModel.find({
-      'schema.verifier': convertToDidUrlFormat(did),
+      'schema.verifier': did,
       'schema.id': schemaId,
     });
     return presentations.map((x) => new VCPresentation(x.toObject()));
@@ -211,11 +211,11 @@ export class VCService {
   ): Promise<Array<VCPresentation<P, ZP>>> {
     if (schemaIds.length <= 0) {
       return this.vcPresentationModel.find({
-        holder: convertToDidUrlFormat(did),
+        holder: did,
       });
     } else {
       return this.vcPresentationModel.find({
-        holder: convertToDidUrlFormat(did),
+        holder: did,
         'schema.id': {
           $in: schemaIds,
         },
@@ -237,7 +237,7 @@ export class VCService {
       throw new Error(`Submission ${submissionId} not found`);
     }
 
-    if (submission.schema.verifier !== convertToDidUrlFormat(did)) {
+    if (submission.schema.verifier !== did) {
       throw new Error(`${did} is not verifier of submission ${submissionId}`);
     }
 

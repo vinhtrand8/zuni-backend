@@ -11,11 +11,7 @@ import { keccak_256 } from '@noble/hashes/sha3';
 import { IDL as idl } from './idl/VerifiableDataRegistry';
 import { IResolverService } from './interface.resolver.service';
 
-export const ZUNI_DID_PREFIX = {
-  solana: {
-    devnet: 'did:zuni:solana:',
-  },
-};
+export const ZUNI_DID_PREFIX = 'did:zuni:solana:';
 
 export const VERIFICATION_RELATIONSHIP = {
   authentication: {
@@ -53,39 +49,46 @@ export class SolanaService implements IResolverService {
     );
   }
 
-  async fetchDIDDocument(did: string): Promise<DIDDocumentView | undefined> {
+  async fetchDIDDocument(didUrl: string): Promise<DIDDocumentView | undefined> {
+    const rawDid = this.convertDidUrlToRaw(didUrl);
+
     const [didPda] = this.findDidPDA(
       this.verifiableDataRegistryProgram.programId,
-      did,
+      rawDid,
     );
     const didOverview =
       await this.verifiableDataRegistryProgram.account.didDocument.fetch(
         didPda,
       );
-    const verificationMethods = await this.fetchVerificationMethods(did);
+    const verificationMethods = await this.fetchVerificationMethods(rawDid);
     const { authentications, assertions, keyAgreements } =
-      await this.fetchVerificationRelationships(did);
+      await this.fetchVerificationRelationships(rawDid);
 
     const didDocument: DIDDocumentView = {
-      id: this.convertToDidUrlFormat(did),
+      id: didUrl,
       controller: didOverview.controller.toBase58(),
       verificationMethod: verificationMethods.map((verification) => {
-        const { keyId, rType, controller, publicKeyMultibase } = verification;
+        const {
+          keyId: rawId,
+          rType,
+          controller,
+          publicKeyMultibase,
+        } = verification;
         return {
-          id: this.convertToDidUrlFormat(keyId),
+          id: this.convertRawToDidUrlFormat(rawId),
           type: rType,
           controller: controller.toBase58(),
           publicKeyMultibase: publicKeyMultibase,
         };
       }),
-      authentication: authentications.map(({ keyId }) =>
-        this.convertToDidUrlFormat(keyId),
+      authentication: authentications.map(({ keyId: rawId }) =>
+        this.convertRawToDidUrlFormat(rawId),
       ),
-      assertion: assertions.map(({ keyId }) =>
-        this.convertToDidUrlFormat(keyId),
+      assertion: assertions.map(({ keyId: rawId }) =>
+        this.convertRawToDidUrlFormat(rawId),
       ),
-      keyAgreement: keyAgreements.map(({ keyId }) =>
-        this.convertToDidUrlFormat(keyId),
+      keyAgreement: keyAgreements.map(({ keyId: rawId }) =>
+        this.convertRawToDidUrlFormat(rawId),
       ),
     };
 
@@ -103,9 +106,10 @@ export class SolanaService implements IResolverService {
         },
       ]);
 
-    return didAccounts.map(({ account }) =>
-      this.convertToDidUrlFormat(account.did),
-    );
+    return didAccounts.map(({ account }) => {
+      const rawId = account.did;
+      return this.convertRawToDidUrlFormat(rawId);
+    });
   }
 
   async fetchNumberOfDidsOwnedByController(
@@ -241,7 +245,19 @@ export class SolanaService implements IResolverService {
     };
   }
 
-  convertToDidUrlFormat(did: string) {
-    return ZUNI_DID_PREFIX.solana.devnet + did;
+  convertRawToDidUrlFormat(rawDid: string) {
+    if (rawDid.startsWith(ZUNI_DID_PREFIX)) {
+      throw new Error('Raw DID already in DID URL format');
+    }
+
+    return ZUNI_DID_PREFIX + rawDid;
+  }
+
+  convertDidUrlToRaw(didUrl: string) {
+    if (!didUrl.startsWith(ZUNI_DID_PREFIX)) {
+      throw new Error('DID URL is not in DID URL format');
+    }
+
+    return didUrl.slice(ZUNI_DID_PREFIX.length);
   }
 }
