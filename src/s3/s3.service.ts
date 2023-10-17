@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  ObjectCannedACL,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -28,7 +32,7 @@ export class S3Service {
         Bucket: this.configService.getOrThrow('AWS_S3_BUCKET_NAME'),
         Key: fileName,
         Body: fileContent,
-        ACL: 'public-read',
+        ACL: 'public-read' as ObjectCannedACL,
       };
       await this.s3Client.send(new PutObjectCommand(params));
 
